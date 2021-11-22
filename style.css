@@ -1,0 +1,118 @@
+body {background-color: rgb(46, 46, 46); margin-left: 4em; margin-right: 4em;}
+#grid {
+    display: grid;
+    width: fit-content;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-row-gap: 0px 4em ;
+}
+#grid2 {
+    display: grid;
+    width: fit-content;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-row-gap: 0px 4em ;
+}
+svg {
+    background-color: rgb(46, 46, 46);   
+}
+.ctext {
+    color: white;
+    font-family: 'Source Code Pro', monospace;
+    grid-column-start: 1;
+    grid-column-end: 3;
+    align-self: center;
+    line-height: 3em;
+    font-size: large
+    
+;}
+.svgboks {
+    grid-column-start: 3;
+    grid-column-end: 4;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@500&display=swap');
+
+
+
+.barchart{
+    grid-column-start: 1;
+    grid-column-end: 3;
+}
+.btext {
+    color: white;
+    font-family: 'Source Code Pro', monospace;
+    grid-column-start: 3;
+    grid-column-end: 4;
+    align-self: center;
+    line-height: 3em;
+    font-size: large;
+
+;}
+
+.intro > h1{
+    color: white;
+    font-family: 'Source Code Pro', monospace;
+    text-align: center;
+}
+.intro > h2{
+    color: white;
+    font-family: 'Source Code Pro', monospace;
+    text-align: center;
+    position: relative;
+    bottom: 1em;
+}
+.intro > h3{
+    color: white;
+    font-family: 'Source Code Pro', monospace;
+    text-align: center;
+    position: relative;
+    bottom: 0.8em
+    
+}
+footer {
+    color: rgb(131, 131, 131);
+    font-family: 'Source Code Pro', monospace;
+    text-align: center;
+    font-size: smaller;
+}
+a:link {
+    color: rgb(143, 143, 143);
+    background-color: transparent;
+    text-decoration: none;}
+a:visited {
+        color: rgb(76, 142, 145);
+        background-color: transparent;
+        text-decoration: none;
+      }
+a:hover {
+        color: rgb(255, 164, 28);
+        background-color: transparent;
+        text-decoration: underline;
+      }
+a:active {
+        color: yellow;
+        background-color: transparent;
+        text-decoration: underline;
+      }
+
+
+      /* her er de styles der blev brugt til barcharten */
+      
+        
+        .axis line{
+          stroke: white;
+        }
+        
+        .axis path{
+          stroke: white;
+        }
+        
+        .axis text{
+          fill: white;
+        } 
+        #tooltip {
+          position: absolute;
+          pointer-events: none;
+        }
+        #tooltip.hidden{
+          display: none;
+        }
