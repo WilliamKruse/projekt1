@@ -18,6 +18,6 @@
   "homepage": "https://github.com/lassebomh/1-semester-projekt#readme",
   "dependencies": {
     "express": "^4.17.1",
-    "pg": "^8.6.0"
+    "pg": "^8.7.1"
   }
 }

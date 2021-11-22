@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>bobler</title>
+    <script type="text/javascript" src="d3.js"></script>
+    <script src="/Merger/main.js" defer></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com"> 
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> 
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="intro">
+    <h1>HVER-GUDERNE x US FOODWASTE</h1>
+    <h2>Explore the data!</h2>
+    <h3>The US is wasting A LOT of their food-supply. It is a problem throughout the whole supplychain. Join us, while we dive deeper into the numbers.</h3>
+</div>
+
+<div id="grid">
+    <div class="barchart"></div>
+    <div class="bartext">
+        <p1 class="btext">Her er en rigtig fin barchart som der snart bliver sat ind. man kan se hvordan foodwaste er fordelt ud over de forskellige sectore i usa. som man tydeligt kan se er det især residential der smider en stor procentdel ud af maden</p1>
+    </div>
+    </div>
+    <div id="grid2">
+<div class="ctext">
+    <p1>The US. foodwaste leaves behind a massive co2 footprint. <br> This chart puts things into perspective. <br> NYC has to step up their game if they are to compete.</p1>
+</div>
+<div class="svgboks"></div>
+</div>
+<footer>
+    <p>MADE BY: HVER-GUDERNE
+    <a class="ref" href="https://refed.com/">DATAKILDE</a>
+    <b>© 2021 HVER-GUDERNE A/S</b></p>
+  </footer>
+    
+    <script>
+// højde og bredde på mit svg element
+const w = 800;
+const h = 622.22;
+const rad = h*0.33;
+const pi = Math.PI;
+function convertXPlacement(degree){return w/2 + rad * Math.cos(degree*0.0174532925)}
+function convertYPlacement(degree){return h/2 + rad * Math.sin(degree*0.0174532925)}
+// værdier jeg skal bruge til boblernes størrelse og placering
+const xplacement = [convertXPlacement(300), convertXPlacement(320), convertXPlacement(350), convertXPlacement(25), convertXPlacement(72), convertXPlacement(130), convertXPlacement(190), convertXPlacement(260)]
+const yplacement = [convertYPlacement(300), convertYPlacement(320), convertYPlacement(350), convertYPlacement(25), convertYPlacement(72), convertYPlacement(130), convertYPlacement(190), convertYPlacement(260)] 
+
+//jeg kan ikke finde ud af at loope igennem key value pair så det skal jeg lige fikse, her er et array med tallene i + navnene på fx firmaerne
+let co2arr = [75544.6, 7555557.5, 12500000, 44900000, 86500000, 110640000, 131000000, 168700000]
+let co2names = ["Passenger vehicle", "US Household", "Google", "IKEA", "New York City","Amazon", "Denmark", "US Foodwaste"]
+//lav en svg boks til boblerne og en scale til mine radiusser, min range er lidt åndsvag fordi jeg ikke skal bruge radius men areal. kan måske godt se der er noget galt
+const rScale = d3.scaleLinear()
+        .domain([0, 168700000])
+        .range([0, 24000]);
+const svg = d3.select(".svgboks")
+        .append("svg")
+        .attr("width", w)
+        .attr("height", h)
+
+//laver lige en ny svg boks midlertidit til barcharten
+
+const svg2 = d3.select(".barchart")
+        .append("svg")
+        .attr("width", 600)
+        .attr("height", 400)
+
+//prøver at lave et par layers
+let layer1 = svg.append('g')
+let layer2 = svg.append('g')
+let invis = layer1.append("svg").attr("opacity",100).attr("x", 138).attr("y", 94).attr("width", w*0.61).attr("height", h*0.71).attr("id", "boks");
+
+//nu laver jeg lige de orange cirkler
+layer2.selectAll("circle")
+    .data([1,2,3,4,5,6,7,8])
+    .enter()
+    .append("circle")
+    .attr("cx", function(d, i){
+        return xplacement[i]
+    } ) 
+    .attr("cy", function(d, i){
+        return yplacement[i]
+    } )
+    .attr("r", 10)
+    
+    /*function(d,i){
+        return Math.sqrt(rScale(co2arr[i])/pi)
+    })*/
+    .attr("fill", "rgb(255,125,0)")
+    .attr("class", "circles")
+    .on('mouseover', function (d, i) {
+     d3.select(this).transition()
+          .duration('5')
+          .attr("opacity", 1)
+          .attr("fill", "rgb(255,105,30)")})
+    .on('mouseout', function (d, i) {
+     d3.select(this).transition()
+          .duration('5')
+          .attr("opacity", 1)
+          .attr("fill", "rgb(255,125,0)")});
+//nu laver jeg lige nogle små nameplates til mine cirkler
+    svg.selectAll("text")
+        .data(co2names)
+        .enter()
+        .append("text")
+        .attr("x", function(d, i){
+            if(i < 2){ return xplacement[i] + 10 + (i*12)}
+            else if (i < 3){ return xplacement[i] + (i*14)}
+            else if (i < 5){ return xplacement[i] + (i*18)}
+            else if (i < 6){ return xplacement[i] - (i*27)}
+            else if (i < 7){ return xplacement[i] - (i*25)}
+            else if (i < 8){ return xplacement[i] - (i*30)}
+        })
+        .attr("y", function(d, i){
+            return yplacement[i]
+        })
+        .text(function(d){return d})
+        .attr("fill", "white")
+        .attr("font-family", "'Source Code Pro', monospace")
+
+// her laver jeg animationen der sker når man ruller ned på siden
+        let optarr = []
+        for(let i = 0; i < 8; i++){
+            optarr.push(Math.sqrt(rScale(co2arr[i])/pi))
+        }
+        console.log(optarr)
+        // okay nu prøver vi at lave en transistion der gør noget når jeg har scrolled ned på siden. vil gøre boblerne store når vi rammer en hvis mængde pixels fra toppen
+        function scrolldown(){
+            if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 110){
+            layer2.selectAll("circle")
+                .data([1,2,3,4,5,6,7,8])
+                .transition()
+                .ease(d3.easeElasticOut.amplitude(0.1).period(0.5))
+                .duration(1000)
+                .attr("r", function(d, i){
+                return optarr[i]
+            })
+                .delay(function(i){return (i*120)})
+                
+                ;
+               
+}
+            
+};
+        //nu skal jeg have en eventhandler der kan trigger min function
+       /* let count = 0
+        if(count == 0){window.onscroll = function() {scrolldown()};}*/
+        window.onscroll = function() {scrolldown()};
+
+
+        //nu kommer alt barchart koden
+
+        const bw = 600;
+    const bh = 400;
+    const barPadding = 70;
+    const yPadding = 5;
+    const padding = 40;
+    const paddingLeft = 30;
+
+    // Denne query kører op imod API'en som findes i 'main.js'.
+    // Denne HTML skal derfor åbnes igennem serveren for at virke.
+    d3.json("/foodbarchart", {
+      method: "GET", 
+    }).then(function(response) {
+      const data = response.data; // Hent data ud af response
+      console.log("data", data[0]);
+
+      let supplyArray = [];
+  
+      for (let i = 0; i < data.length; i++) {
+        supplyArray.push(data[i].supply);
+      }
+      
+      // console.log bruges til at tjekke i console om dataene findes
+      console.log(supplyArray)
+
+      let wasteArray = [];
+  
+    for (let i = 0; i < data.length; i++) {
+      wasteArray.push(data[i].tons_wasted);
+    }
+
+    let textArray = []
+
+     for (let i = 0; i < data.length; i++) {
+      textArray.push(data[i].sector);
+    }
+
+
+     let newArray = []
+
+    for (let i = 0; i < supplyArray.length; i++) {
+      newArray.push([supplyArray[i],wasteArray[i],textArray[i]]);
+    }
+
+    /*let procentBox = d3.select("body")
+    .append("div")
+    .style("position", "absolute")
+    .style("z-index", "10")
+    .attr ("opacity", 0)
+    .style("background", "rgb (220, 64, 78)")
+    .text("hej"); */
+
+    function handleMouseover (d, i) {
+      d3.select(this).style("fill", "rgb(230,90,0)");
+
+
+      let xPosition = 3000
+      let yPosition = 100
+      /*
+      let xPosition = parseFloat(d3.select(this).attr("x")) + xScale.scaleLinear / 2;
+      let yPosition = parseFloat(d3.select(this).attr("y")) / 2 + h /2;*/
+
+      layer2.select("#tooltip")
+      .style("left", 300)
+      .style("top", 500)
+      .select("#value")
+      .text(function(d, i){
+        d[1]/d[0]*100 + '%'});
+
+      d3.select("#tooltip").classed("hidden", false);
+
+      };
+
+    
+
+    function handleMouseout(d, i){
+      d3.select(this).style("fill", "rgb(255,125,0)");}
+    
+     
+    console.log(textArray)
+
+    let xScale = d3.scaleLinear()
+    .domain(0, supplyArray.length)
+    .range([padding,w - padding]);
+// de to lidt magiske tal kan rettes
+    let yScale = d3.scaleLinear()
+    .domain([0,d3.max(supplyArray)])
+    .range([padding ,h - padding-19]);
+
+    let nyyScale = d3.scaleLinear()
+    .domain([d3.max(supplyArray)/1000000 + 19, 0])
+    .range([padding,h - padding]);
+    
+//de her paddings er midlertidge
+    let barXScale = d3.scaleLinear()
+    .domain([0,supplyArray.length])
+    .range([padding + 25, w - padding + 35]);
+
+      // Lav SVG element
+      const svg = d3.select("body")
+        .append("svg")
+        .attr("width", bw)
+        .attr("height", bh);
+     
+
+        //laver layers
+        let layer1b = svg.append('g')
+        let layer2b = svg.append('g')
+        let layer3b = svg.append('g')
+
+      // Create bars for supply
+      
+      layer1b.selectAll("rect")
+      .data(newArray)
+      .enter()
+      .append("rect")
+      .attr("x",function(d, i){
+        return barXScale(i);
+      })
+      .attr("y", h-padding)
+      .attr("width", w / wasteArray.length - barPadding)
+      .attr("height", 0)
+      .attr("fill", "rgb(33,40,69)");
+
+      layer1b.selectAll("rect")
+          .data(newArray)
+          .transition()
+          .ease(d3.easeExpOut)
+          .duration(2000)
+          .attr("y", function(d){
+        return h - yScale(d[0]);
+      })
+          .attr("height", function(d) { return yScale(d[0])- padding
+      } )
+      // Create bars for tons_wasted
+      
+      layer2b.selectAll("rect")
+      .data(newArray)
+      .enter()
+      .append("rect")
+      .attr("x",function(d, i){
+        return barXScale(i);
+      })
+      .attr("y", h-padding)
+      .attr("width", w / wasteArray.length - barPadding)
+      .attr("height", 0)
+      .attr("fill", "rgb(255,125,0)")
+
+      .on("mouseover", handleMouseover)                  
+      .on("mouseout", handleMouseout)
+      
+      layer2b.selectAll("rect")
+          .data(newArray)
+          .transition()
+          .ease(d3.easeExpOut)
+          .duration(2000)
+          .attr("y", function(d){
+        return h - yScale(d[1]);
+      })
+          .attr("height", function(d) { return yScale(d[1])- padding
+      } )
+
+          .delay(function(d, i){return 300 +i * 150})
+      console.log(wasteArray)
+
+      // create sector name
+
+      layer3b.selectAll("text")
+      .data(newArray)
+      .enter()
+      .append("text")
+      .text(function(d){
+        return d[2];
+      })
+      .attr("x", function(d,i){
+        return barXScale(i)
+      })
+      .attr("y", h - 10)
+      .attr("font-family", "sans-serif")
+      .attr("font-size", "11px")
+      .attr("fill", "white")
+      .style("text-align", "middle");
+
+      //Labes for sector
+      svg2.selectAll("text")
+         .data(newArray)
+         .enter()
+         .append("text")
+         .text( "hej")
+          
+
+      // Create xAxis
+
+      const xAxis = d3.axisBottom().scale(xScale);
+      svg2.append("g")
+         .attr("class", "axis")
+         .attr("transform", "translate(0, " + (h - padding) + ")")
+         .call(xAxis)
+         .append("text")
+         .attr("text-anchor", "end")
+         .attr("fill", "white")
+         .attr("transform", `translate(${w}, 10)`)
+         .text("Sector") 
+         
+
+      // Create yAxis
+
+      yAxis = d3.axisLeft().scale(nyyScale).tickValues([0,50, 100, 150, 200, 250, 300, 350 ]);
+      svg2.append("g")
+         .attr("class", "axis")
+         .attr("transform", "translate(" + padding + ",0)")
+         .call(yAxis)
+         .append("text")
+         .attr("text-anchor", "start")
+         .attr("fill", "white")
+         .attr("transform", "translate(-20, 25)")
+         .text("Million Tons"); 
+     
+
+    })
+            
+    </script>
+
+
+</body>
+</html>

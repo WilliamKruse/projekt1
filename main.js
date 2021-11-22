@@ -55,7 +55,7 @@ app.get("/foodbarchart", async (req, res) => {
 // Web-serveren startes.
 app.listen(port, () => console.log(`Serveren kører på http://localhost:${port}`));
 
-let spiral = d3.xml("spiral.svg")
- .then(data => {
-    d3.select("#boks").node().append(data.documentElement)
-  });
+//let spiral = d3.xml("spiral.svg")
+// .then(data => {
+//    d3.select("#boks").node().append(data.documentElement)
+//  });
