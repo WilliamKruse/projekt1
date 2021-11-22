@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>bobler</title>
     <script type="text/javascript" src="d3.js"></script>
+    <script type="text/javascript" src="main2.js"></script>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com"> 
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> 
@@ -213,7 +214,7 @@ layer2.selectAll("circle")
       let xPosition = parseFloat(d3.select(this).attr("x")) + xScale.scaleLinear / 2;
       let yPosition = parseFloat(d3.select(this).attr("y")) / 2 + h /2;*/
 
-      layer2.select("#tooltip")
+      layer2b.select("#tooltip")
       .style("left", 300)
       .style("top", 500)
       .select("#value")
@@ -234,32 +235,28 @@ layer2.selectAll("circle")
 
     let xScale = d3.scaleLinear()
     .domain(0, supplyArray.length)
-    .range([padding,w - padding]);
+    .range([padding,bw - padding]);
 // de to lidt magiske tal kan rettes
     let yScale = d3.scaleLinear()
     .domain([0,d3.max(supplyArray)])
-    .range([padding ,h - padding-19]);
+    .range([padding ,bh - padding-19]);
 
     let nyyScale = d3.scaleLinear()
     .domain([d3.max(supplyArray)/1000000 + 19, 0])
-    .range([padding,h - padding]);
+    .range([padding,bh - padding]);
     
 //de her paddings er midlertidge
     let barXScale = d3.scaleLinear()
     .domain([0,supplyArray.length])
-    .range([padding + 25, w - padding + 35]);
+    .range([padding + 25, bw - padding + 35]);
 
-      // Lav SVG element
-      const svg = d3.select("body")
-        .append("svg")
-        .attr("width", bw)
-        .attr("height", bh);
+    
      
 
         //laver layers
-        let layer1b = svg.append('g')
-        let layer2b = svg.append('g')
-        let layer3b = svg.append('g')
+        let layer1b = svg2.append('g')
+        let layer2b = svg2.append('g')
+        let layer3b = svg2.append('g')
 
       // Create bars for supply
       
@@ -270,8 +267,8 @@ layer2.selectAll("circle")
       .attr("x",function(d, i){
         return barXScale(i);
       })
-      .attr("y", h-padding)
-      .attr("width", w / wasteArray.length - barPadding)
+      .attr("y", bh-padding)
+      .attr("width", bw / wasteArray.length - barPadding)
       .attr("height", 0)
       .attr("fill", "rgb(33,40,69)");
 
@@ -281,7 +278,7 @@ layer2.selectAll("circle")
           .ease(d3.easeExpOut)
           .duration(2000)
           .attr("y", function(d){
-        return h - yScale(d[0]);
+        return bh - yScale(d[0]);
       })
           .attr("height", function(d) { return yScale(d[0])- padding
       } )
@@ -294,8 +291,8 @@ layer2.selectAll("circle")
       .attr("x",function(d, i){
         return barXScale(i);
       })
-      .attr("y", h-padding)
-      .attr("width", w / wasteArray.length - barPadding)
+      .attr("y", bh-padding)
+      .attr("width", bw / wasteArray.length - barPadding)
       .attr("height", 0)
       .attr("fill", "rgb(255,125,0)")
 
@@ -308,7 +305,7 @@ layer2.selectAll("circle")
           .ease(d3.easeExpOut)
           .duration(2000)
           .attr("y", function(d){
-        return h - yScale(d[1]);
+        return bh - yScale(d[1]);
       })
           .attr("height", function(d) { return yScale(d[1])- padding
       } )
@@ -328,7 +325,7 @@ layer2.selectAll("circle")
       .attr("x", function(d,i){
         return barXScale(i)
       })
-      .attr("y", h - 10)
+      .attr("y", bh - 10)
       .attr("font-family", "sans-serif")
       .attr("font-size", "11px")
       .attr("fill", "white")
@@ -347,12 +344,12 @@ layer2.selectAll("circle")
       const xAxis = d3.axisBottom().scale(xScale);
       svg2.append("g")
          .attr("class", "axis")
-         .attr("transform", "translate(0, " + (h - padding) + ")")
+         .attr("transform", "translate(0, " + (bh - padding) + ")")
          .call(xAxis)
          .append("text")
          .attr("text-anchor", "end")
          .attr("fill", "white")
-         .attr("transform", `translate(${w}, 10)`)
+         .attr("transform", `translate(${bw}, 10)`)
          .text("Sector") 
          
 
