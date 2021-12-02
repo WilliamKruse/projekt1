@@ -84,7 +84,7 @@ layer2.selectAll("circle")
     .attr("cy", function(d, i){
         return yplacement[i]
     } )
-    .attr("r", 10)
+    .attr("r", 5)
     
     /*function(d,i){
         return Math.sqrt(rScale(co2arr[i])/pi)
@@ -326,7 +326,7 @@ layer2.selectAll("circle")
         return barXScale(i) +25
       })
       .attr("y", bh - 20)
-      .attr("font-family", "sans-serif")
+      .style("font-family", "monospace")
       .attr("font-size", "11px")
       .attr("fill", "white")
       .attr("text-anchor", "middle");
@@ -350,7 +350,8 @@ layer2.selectAll("circle")
          .attr("text-anchor", "end")
          .attr("fill", "white")
          .attr("transform", `translate(${bw}, 10)`)
-         .text("Sector") 
+         .text("Sector")
+         .style("font-family", "monospace");
          
 
       // Create yAxis
@@ -364,7 +365,8 @@ layer2.selectAll("circle")
          .attr("text-anchor", "start")
          .attr("fill", "white")
          .attr("transform", "translate(-20, 25)")
-         .text("Million Tons"); 
+         .text("Million Tons")
+         .style("font-family", "monospace");
      
 
     })
