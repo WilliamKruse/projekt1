@@ -1,6 +1,7 @@
-const express = require("express")
+const express = require('express')
+const { Client } =  require("pg");
 const app = express()
-const port = 3000
+
 
 const api_port = process.env.PORT || 5000;
 const DB_USER = process.env.DB_USER || "<my_user>";
@@ -59,4 +60,6 @@ app.get("/foodbarchart", async (req, res) => {
 });
 
 // Web-serveren startes.
-app.listen(port, () => console.log(`Serveren kører på http://localhost:${port}`));
+app.listen(api_port, () => {
+  console.log(`Appl. lytter på http://localhost:${api_port}`)
+})
