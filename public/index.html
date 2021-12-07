@@ -65,7 +65,7 @@ const svg = d3.select(".svgboks")
 
 const svg2 = d3.select(".barchart")
         .append("svg")
-        .attr("width", 600)
+        .attr("width", 700)
         .attr("height", 400)
 
 //prøver at lave et par layers
@@ -100,7 +100,20 @@ layer2.selectAll("circle")
      d3.select(this).transition()
           .duration('5')
           .attr("opacity", 1)
-          .attr("fill", "rgb(255,125,0)")});
+          .attr("fill", "rgb(255,125,0)")})
+      /*.on("click", clicked);
+
+
+
+      function clicked(event, [x, y]) {
+    event.stopPropagation();
+    svg.transition().duration(750).call(
+      zoom.transform,
+      d3.zoomIdentity.translate(width / 2, height / 2).scale(40).translate(-x, -y),
+      d3.pointer(event)  );
+  }*/
+
+
 //nu laver jeg lige nogle små nameplates til mine cirkler
     svg.selectAll("text")
         .data(co2names)
@@ -153,9 +166,9 @@ layer2.selectAll("circle")
 
         //nu kommer alt barchart koden
 
-        const bw = 600;
+        const bw = 700;
     const bh = 400;
-    const barPadding = 70;
+    const barPadding = 80;
     const yPadding = 5;
     const padding = 40;
     const paddingLeft = 30;
@@ -235,7 +248,7 @@ layer2.selectAll("circle")
 
     let xScale = d3.scaleLinear()
     .domain(0, supplyArray.length)
-    .range([padding,bw - padding]);
+    .range([padding+30,bw - padding]);
 // de to lidt magiske tal kan rettes
     let yScale = d3.scaleLinear()
     .domain([0,d3.max(supplyArray)])
@@ -248,7 +261,7 @@ layer2.selectAll("circle")
 //de her paddings er midlertidge
     let barXScale = d3.scaleLinear()
     .domain([0,supplyArray.length])
-    .range([padding + 25, bw - padding + 35]);
+    .range([padding + 55, bw - padding + 35]);
 
     
      
@@ -323,7 +336,7 @@ layer2.selectAll("circle")
         return d[2];
       })
       .attr("x", function(d,i){
-        return barXScale(i) +25
+        return barXScale(i) +30
       })
       .attr("y", bh - 20)
       .style("font-family", "monospace")
@@ -359,12 +372,12 @@ layer2.selectAll("circle")
       yAxis = d3.axisLeft().scale(nyyScale).tickValues([0,50, 100, 150, 200, 250, 300, 350 ]);
       svg2.append("g")
          .attr("class", "axis")
-         .attr("transform", "translate(" + padding + ",0)")
+         .attr("transform", "translate(" + 70 + ",0)")
          .call(yAxis)
          .append("text")
          .attr("text-anchor", "start")
          .attr("fill", "white")
-         .attr("transform", "translate(-20, 25)")
+         .attr("transform", "translate(-70, 28)")
          .text("Million Tons")
          .style("font-family", "monospace");
      

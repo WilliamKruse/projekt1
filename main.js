@@ -2,12 +2,11 @@ const express = require('express')
 const { Client } =  require("pg");
 const app = express()
 
-
 const api_port = process.env.PORT || 5000;
-const DB_USER = process.env.DB_USER || "<my_user>";
-const DB_HOST = process.env.DB_HOST || "<my_host>";
-const DB_NAME = process.env.DB_NAME || "<my_db>";
-const DB_PW = process.env.DB_PW || "<my_passwd>";
+const DB_USER = process.env.DB_USER || "yuryrofq";
+const DB_HOST = process.env.DB_HOST || "ella.db.elephantsql.com";
+const DB_NAME = process.env.DB_NAME || "yuryrofq";
+const DB_PW = process.env.DB_PW || "T4RiGNq-HM-JCLq8rKJLWLevOpUElOgw";
 const DB_PORT = process.env.DB_PORT || 5432;
 
 const client = new Client({ 
