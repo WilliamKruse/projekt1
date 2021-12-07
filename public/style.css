@@ -11,6 +11,14 @@ body {background-color: rgb(46, 46, 46); margin-left: 4em; margin-right: 4em;}
     grid-template-columns: 1fr 1fr 1fr;
     grid-row-gap: 0px 4em ;
 }
+
+#grid3 {
+  display: grid;
+  width: fit-content;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-row-gap: 0px 4em ;
+}
+
 svg {
     background-color: rgb(46, 46, 46);   
 }
@@ -46,6 +54,22 @@ svg {
     line-height: 3em;
     font-size: large;
 
+;}
+
+.treemap{
+  grid-column-start: 1;
+  grid-column-end: 3;
+}
+
+.treemapText {
+  color: white;
+  font-family: 'Source Code Pro', monospace;
+  grid-column-start: 3;
+  grid-column-end: 4;
+  align-self: top;
+  line-height: 3em;
+  font-size: large;
+  
 ;}
 
 .intro > h1{

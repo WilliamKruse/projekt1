@@ -1,0 +1,43 @@
+{ "name": "Causes_Residential_Foodwaste",
+    "children":[
+    {"name": "Spoiled",
+        "tons": "7.84M tons",
+        "procent": 26.1
+    },
+    {"name": "Inedible Parts",
+        "tons": "7.21M tons",
+        "procent": 24
+    },
+    {"name": "Didn't Want Leftovers",
+        "tons": "3.72M tons",
+        "procent": 12.4
+    },
+    {"name": "Date Label Concerns",
+        "tons": "2.29M tons",
+        "procent": 7.6
+    },
+    {"name": "Left Out Too Long",
+        "tons": "2.09M tons",
+        "procent": 7
+    },
+    {"name": "Consindered Inedible",
+        "tons": "2.04M tons",
+        "procent": 6.8
+    },
+    {"name": "Other",
+        "tons": "1.7M tons",
+        "procent": 5.7
+    },
+    {"name": "To Little To Save",
+        "tons": "1.65M tons",
+        "procent": 5.5
+    },
+    {"name": "Didn't Taste Good",
+        "tons": "1.27M tons",
+        "procent": 4.2
+    },
+    {"name": "Cooking Issues",
+        "tons": "197K tons",
+        "procent": 0.66
+    }
+]}

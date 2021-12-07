@@ -11,6 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com"> 
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> 
     <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@500;700&display=swap" rel="stylesheet">
+    <div id="my_dataviz"></div>
 </head>
 <body>
 <div class="intro">
@@ -30,6 +31,12 @@
     <p1>The US. foodwaste leaves behind a massive co2 footprint. The major threat from increased CO2 is the greenhouse effect. As a greenhouse gas, excessive CO2 creates a cover that traps the sun´s heat energy in the atmospheric bubble, warming the planet and the oceans. <br> The circles put thing into perspective.</p1>
 </div>
 <div class="svgboks"></div>
+</div>
+<div id="grid3">
+  <div class="treemap"></div>
+  <div class="treemapText">
+    <p1>Causes for food waste in the residential sector</p1>
+  </div>
 </div>
 <footer>
     <p>MADE BY: HVER-GUDERNE
@@ -67,6 +74,16 @@ const svg2 = d3.select(".barchart")
         .append("svg")
         .attr("width", 700)
         .attr("height", 400)
+
+// set the width, height and margins of the graph
+const width = 725;
+const height = 700
+
+// append the svg object to the page
+const svg3 = d3.select(".treemap")
+.append("svg")
+  .attr("width", width)
+  .attr("height", height)    
 
 //prøver at lave et par layers
 let layer1 = svg.append('g')
@@ -380,9 +397,83 @@ layer2.selectAll("circle")
          .attr("transform", "translate(-70, 28)")
          .text("Million Tons")
          .style("font-family", "monospace");
-     
 
-    })
+let layer1t = svg3.append('g')
+let layer2t = svg3.append('g') 
+
+// defines the tooltip   
+const tooltip2 = d3.select("#my_dataviz")
+.append("div")
+.style("position", "absolute")
+.style("visibility", "hidden")
+.style("color", "white")
+.style("background-color", "rgb(46, 46, 46)")
+.text("");
+
+// handles what happens on mousemove
+function handleMousemove (event, d){
+  const tons = d.data.tons;
+  const procent = d.data.procent;
+  const text = `${tons} - ${procent}%`
+  d3.select(this).style("fill", "rgb(255,105,30)")
+  tooltip2.text(text)
+  var x = event.clientX;
+  var y = event.clientY;
+  tooltip2.style("left", (window.pageXOffset + x + 10) + "px")
+  tooltip2.style("top", (window.pageYOffset + y + 10) + "px")
+  return tooltip2.style("visibility", "visible")
+}
+
+// handles what happens on mouseout
+function handleMouseout2(){
+  d3.select(this).style("fill", "rgb(255,125,0)")
+  return tooltip2.style("visibility", "hidden")
+}
+
+// read json data
+d3.json("causes.json").then(function(data) {
+
+  // here the size of each leave is given in the 'procent' 
+  const root = d3.hierarchy(data).sum(function(d){ 
+    return d.procent
+  }) 
+
+  // Then d3.treemap computes the position of each element of the hierarchy
+  d3.treemap()
+    .size([width, height])
+    .padding(5)
+    (root)
+
+  // use this information to add rectangles:
+  layer1t
+    .selectAll("rect")
+    .data(root.leaves())
+    .enter()
+    .append("rect")
+      .attr('x', function (d) { return d.x0; })
+      .attr('y', function (d) { return d.y0; })
+      .attr('width', function (d) { return d.x1 - d.x0; })
+      .attr('height', function (d) { return d.y1 - d.y0; })
+      .style("fill", "rgb(255,125,0)")
+      .on("mousemove", handleMousemove)
+      .on("mouseout", handleMouseout2)
+
+  // and to add the text labels
+  layer2t
+    .selectAll("text")
+    .data(root.leaves())
+    .enter()
+    .append("text")
+    .attr("x", function(d) { return d.x0 + 5})
+    .attr("y", function(d) { return d.y0 + 20})   
+    .text(function(d) { return d.data.name})
+    .attr("text-overflow", "ellipsis")
+    .attr("word-wrap", "break-all")    
+    .attr("font-size", "1rem")
+    .attr("fill", "white")
+    
+})
+})
             
     </script>
 
