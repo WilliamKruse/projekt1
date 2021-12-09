@@ -43,6 +43,8 @@
     <a class="ref" href="https://refed.com/">DATAKILDE</a>
     <b>© 2021 HVER-GUDERNE A/S</b></p>
   </footer>
+
+
     
     <script>
 // højde og bredde på mit svg element
@@ -68,15 +70,53 @@ const svg = d3.select(".svgboks")
         .attr("width", w)
         .attr("height", h)
 
-//laver lige en ny svg boks midlertidit til barcharten
+//svg boks til barcharten
 
 const svg2 = d3.select(".barchart")
         .append("svg")
-        .attr("width", 700)
+        .attr("width", 750)
         .attr("height", 400)
 
+// To g bokse
+        var box1 = svg2.append('g')
+        var box2 = svg2.append('g')
+
+// Grå firkant og tekst.
+        box1.append("rect")
+          .attr('x', 650)
+          .attr('y', 38)
+          .attr("width", 15)
+          .attr("height", 15)
+          .attr('stroke', 'white')
+          .attr('fill', "rgb(128,128,128)")
+
+        box1.append('text')
+          .attr('x', 675)
+          .attr('y', 50)
+          .text("Tons supply")
+          .style("fill", "white")
+          .style("font-family", "monospace")
+          .attr("font-size", "11px")
+ 
+// Orange firkant og tekst.
+        box2.append('rect')
+          .attr('x', 650)
+          .attr('y', 68)
+          .attr("width", 15)
+          .attr("height", 15)
+          .attr('stroke', 'white')
+          .attr('fill', "rgb(255,125,0)")
+
+        box2.append('text')
+          .attr('x', 675)
+          .attr('y', 80)
+          .text("Tons wasted")
+          .style("fill", "white")
+          .style("font-family", "monospace")
+          .attr("font-size", "11px")
+       
 // set the width, height and margins of the graph
-const width = 725;
+const width = 740;
 const height = 700
 
 // append the svg object to the page
@@ -181,88 +221,89 @@ layer2.selectAll("circle")
         window.onscroll = function() {scrolldown()};
 
 
-        //nu kommer alt barchart koden
+        //Barchart
 
-        const bw = 700;
+    
+    const bw = 700;
     const bh = 400;
     const barPadding = 80;
     const yPadding = 5;
     const padding = 40;
     const paddingLeft = 30;
 
-    // Denne query kører op imod API'en som findes i 'main.js'.
-    // Denne HTML skal derfor åbnes igennem serveren for at virke.
+    // Query kører op imod API'en som findes i 'main.js'.
+    // HTML åbnes igennem serveren for at virke.
     d3.json("/foodbarchart", {
       method: "GET", 
     }).then(function(response) {
       const data = response.data; // Hent data ud af response
       console.log("data", data[0]);
 
+      //Tons supply bliver fundet i data
       let supplyArray = [];
-  
       for (let i = 0; i < data.length; i++) {
         supplyArray.push(data[i].supply);
       }
-      
-      // console.log bruges til at tjekke i console om dataene findes
-      console.log(supplyArray)
 
+      //Tons waste bliver fundet i data
       let wasteArray = [];
-  
     for (let i = 0; i < data.length; i++) {
       wasteArray.push(data[i].tons_wasted);
     }
 
+      //Sektor bliver fundet i data
     let textArray = []
-
      for (let i = 0; i < data.length; i++) {
       textArray.push(data[i].sector);
     }
 
+    //Procent waste bliver fundet i data
+    let procentWasteArray = []
+for (let i = 0; i < data.length; i++) {
+  procentWasteArray.push(data[i].procent_wasted);
+}
 
+//Al data bliver samlet med rigtige værdier
      let newArray = []
-
     for (let i = 0; i < supplyArray.length; i++) {
-      newArray.push([supplyArray[i],wasteArray[i],textArray[i]]);
+      newArray.push([supplyArray[i],wasteArray[i],textArray[i],procentWasteArray[i]]);
     }
 
-    /*let procentBox = d3.select("body")
+    //Tooltip til visning af procent
+    const tooltip = d3.select("#my_dataviz")
     .append("div")
     .style("position", "absolute")
-    .style("z-index", "10")
-    .attr ("opacity", 0)
-    .style("background", "rgb (220, 64, 78)")
-    .text("hej"); */
+    .style("visibility", "hidden")
+    .style("color", "white")
+    .style("background-color", "rgb(46, 46, 46)")
+    .style("padding", '5px')
+    .style("border", "solid")
+    .style("border-width", '1px')
+    .style("border-color", "white")
+    .style("font-family", "monospace")
+    .style("font-size", "12px")
+    .text("");
 
+// Håndterer mouseover
     function handleMouseover (d, i) {
-      d3.select(this).style("fill", "rgb(230,90,0)");
-
-
-      let xPosition = 3000
-      let yPosition = 100
-      /*
-      let xPosition = parseFloat(d3.select(this).attr("x")) + xScale.scaleLinear / 2;
-      let yPosition = parseFloat(d3.select(this).attr("y")) / 2 + h /2;*/
-
-      layer2b.select("#tooltip")
-      .style("left", 300)
-      .style("top", 500)
-      .select("#value")
-      .text(function(d, i){
-        d[1]/d[0]*100 + '%'});
-
-      d3.select("#tooltip").classed("hidden", false);
-
-      };
-
+     d3.select(this).style("fill", "rgb(230,90,0)")
+     const procentWaste = i[3]
+     tooltip.text("Procent wasted - " + procentWaste.toFixed(2) + "%")
+     var x1 = event.clientX;
+     var y1 = event.clientY;
+     tooltip.style("left", (window.pageXOffset + x1 + 10) + "px")
+     tooltip.style("top", (window.pageYOffset + y1 + 10) + "px")
+     return tooltip.style("visibility", "visible")
+    };
     
-
+//Håndterer mouseout
     function handleMouseout(d, i){
-      d3.select(this).style("fill", "rgb(255,125,0)");}
+      d3.select(this).style("fill", "rgb(255,125,0)");
+      return tooltip.style("visibility", "hidden")
     
-     
-    console.log(textArray)
+    }
 
+  //TODO
     let xScale = d3.scaleLinear()
     .domain(0, supplyArray.length)
     .range([padding+30,bw - padding]);
@@ -280,15 +321,13 @@ layer2.selectAll("circle")
     .domain([0,supplyArray.length])
     .range([padding + 55, bw - padding + 35]);
 
-    
-     
 
         //laver layers
         let layer1b = svg2.append('g')
         let layer2b = svg2.append('g')
         let layer3b = svg2.append('g')
 
-      // Create bars for supply
+      // Create bars for supply(grey)
       
       layer1b.selectAll("rect")
       .data(newArray)
@@ -312,8 +351,8 @@ layer2.selectAll("circle")
       })
           .attr("height", function(d) { return yScale(d[0])- padding
       } )
-      // Create bars for tons_wasted
-      
+
+      // Create bars for tons_wasted(orange)
       layer2b.selectAll("rect")
       .data(newArray)
       .enter()
@@ -325,8 +364,7 @@ layer2.selectAll("circle")
       .attr("width", bw / wasteArray.length - barPadding)
       .attr("height", 0)
       .attr("fill", "rgb(255,125,0)")
-
-      .on("mouseover", handleMouseover)                  
+      .on("mouseover", handleMouseover)  
       .on("mouseout", handleMouseout)
       
       layer2b.selectAll("rect")
@@ -339,12 +377,9 @@ layer2.selectAll("circle")
       })
           .attr("height", function(d) { return yScale(d[1])- padding
       } )
-
           .delay(function(d, i){return 300 +i * 150})
-      console.log(wasteArray)
 
       // create sector name
-
       layer3b.selectAll("text")
       .data(newArray)
       .enter()
@@ -361,16 +396,7 @@ layer2.selectAll("circle")
       .attr("fill", "white")
       .attr("text-anchor", "middle");
 
-      //Labes for sector
-      svg2.selectAll("text")
-         .data(newArray)
-         .enter()
-         .append("text")
-         .text( "hej")
-          
-
       // Create xAxis
-
       const xAxis = d3.axisBottom().scale(xScale);
       svg2.append("g")
          .attr("class", "axis")
@@ -383,10 +409,8 @@ layer2.selectAll("circle")
          .text("Sector")
          .style("font-family", "monospace");
          
-
       // Create yAxis
-
-      yAxis = d3.axisLeft().scale(nyyScale).tickValues([0,50, 100, 150, 200, 250, 300, 350 ]);
+      yAxis = d3.axisLeft().scale(nyyScale).tickValues([0,50, 100, 150, 200, 250, 300, 350]);
       svg2.append("g")
          .attr("class", "axis")
          .attr("transform", "translate(" + 70 + ",0)")
@@ -398,6 +422,7 @@ layer2.selectAll("circle")
          .text("Million Tons")
          .style("font-family", "monospace");
 
+  // Treemap
 let layer1t = svg3.append('g')
 let layer2t = svg3.append('g') 
 
@@ -408,6 +433,12 @@ const tooltip2 = d3.select("#my_dataviz")
 .style("visibility", "hidden")
 .style("color", "white")
 .style("background-color", "rgb(46, 46, 46)")
+.style("padding", '5px')
+.style("border", "solid")
+.style("border-width", '1px')
+.style("border-color", "white")
+.style("font-family", "monospace")
+.style("font-size", "12px")
 .text("");
 
 // handles what happens on mousemove
@@ -469,14 +500,14 @@ d3.json("causes.json").then(function(data) {
     .text(function(d) { return d.data.name})
     .attr("text-overflow", "ellipsis")
     .attr("word-wrap", "break-all")    
-    .attr("font-size", "1rem")
+    .attr("font-size", "12px")
     .attr("fill", "white")
-    
+    .attr("font-weight", "bold")
+    .style("font-family", "monospace") 
 })
 })
             
     </script>
-
 
 </body>
 </html>
