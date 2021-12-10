@@ -1,17 +1,110 @@
-body {background-color: rgb(46, 46, 46); margin-left: 4em; margin-right: 4em;}
+@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@500&display=swap');
+
+body {
+  background-color: rgb(46, 46, 46); 
+  margin-left: 4em; 
+  margin-right: 4em;
+}
+
+.intro > h1{
+  color: white;
+  font-family: 'Source Code Pro', monospace;
+  text-align: center;
+  font-size: 60px;
+}
+
+.intro > h2{
+  color: white;
+  font-family: 'Source Code Pro', monospace;
+  text-align: center;
+  position: relative;
+  bottom: 1em;
+  font-size: 30px;
+}
+
+/* creates a line before */
+.intro > h3::before{
+  content: ' ';
+  display: block;
+  border: 1px solid rgb(128,128,128);
+}
+
+.intro > h3{
+  color: white;
+  font-family: 'Source Code Pro', monospace;
+  text-align: center;
+  position: relative;
+  bottom: 0.8em;
+  line-height: 2em;
+}
+
+/* creates a line after */
+.intro > h3::after{
+  content: ' ';
+  display: block;
+  border: 1px solid rgb(128,128,128);
+}
+
+/* barchart */
 #grid {
     display: grid;
     width: fit-content;
     grid-template-columns: 1fr 1fr 1fr;
     grid-row-gap: 0px 4em ;
 }
+
+  .barchart{
+    grid-column-start: 1;
+    grid-column-end: 3;
+  }
+
+  .barchartText {
+    color: white;
+    font-family: 'Source Code Pro', monospace;
+    grid-column-start: 3;
+    grid-column-end: 4;
+    align-self: center;
+    line-height: 2em;
+    font-size: large;
+  }
+
+    /* set the styles for the barchar axis */
+    .axis line{
+      stroke: white;
+    }
+
+    .axis path{
+      stroke: white;
+    }
+
+    .axis text{
+      fill: white;
+      font-size: 12px;
+    }
+
+/* spiral */    
 #grid2 {
     display: grid;
     width: fit-content;
     grid-template-columns: 1fr 1fr 1fr;
     grid-row-gap: 0px 4em ;
 }
+  .spiral {
+    grid-column-start: 3;
+    grid-column-end: 4;
+  }
 
+  .spiralText {
+    color: white;
+    font-family: 'Source Code Pro', monospace;
+    grid-column-start: 1;
+    grid-column-end: 3;
+    align-self: center;
+    line-height: 2em;
+    font-size: large;
+  }
+
+/* treemap */  
 #grid3 {
   display: grid;
   width: fit-content;
@@ -19,125 +112,51 @@ body {background-color: rgb(46, 46, 46); margin-left: 4em; margin-right: 4em;}
   grid-row-gap: 0px 4em ;
 }
 
-svg {
-    background-color: rgb(46, 46, 46);   
-}
-.ctext {
-    color: white;
-    font-family: 'Source Code Pro', monospace;
+  .treemap{
     grid-column-start: 1;
-    grid-column-end: 3;
-    align-self: center;
-    line-height: 3em;
-    font-size: large
-    
-;}
-.spiral {
-    grid-column-start: 3;
-    grid-column-end: 4;
-}
+    grid-column-end: 3;}
 
-
-@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@500&display=swap');
-
-
-
-.barchart{
-    grid-column-start: 1;
-    grid-column-end: 3;
-}
-.btext {
+  .treemapText {
     color: white;
     font-family: 'Source Code Pro', monospace;
     grid-column-start: 3;
     grid-column-end: 4;
     align-self: center;
-    line-height: 3em;
+    line-height: 2em;
     font-size: large;
+  }
 
-;}
-
-.treemap{
-  grid-column-start: 1;
-  grid-column-end: 3;
-}
-
-.treemapText {
-  color: white;
-  font-family: 'Source Code Pro', monospace;
-  grid-column-start: 3;
-  grid-column-end: 4;
-  align-self: top;
-  line-height: 3em;
-  font-size: large;
-  
-;}
-
-.intro > h1{
-    color: white;
-    font-family: 'Source Code Pro', monospace;
-    text-align: center;
-}
-.intro > h2{
-    color: white;
-    font-family: 'Source Code Pro', monospace;
-    text-align: center;
-    position: relative;
-    bottom: 1em;
-}
-.intro > h3{
-    color: white;
-    font-family: 'Source Code Pro', monospace;
-    text-align: center;
-    position: relative;
-    bottom: 0.8em
-    
-}
+/* footer */  
 footer {
     color: rgb(131, 131, 131);
     font-family: 'Source Code Pro', monospace;
     text-align: center;
     font-size: smaller;
 }
-a:link {
+
+  a:link {
     color: rgb(143, 143, 143);
     background-color: transparent;
-    text-decoration: none;}
-a:visited {
-        color: rgb(76, 142, 145);
-        background-color: transparent;
-        text-decoration: none;
-      }
-a:hover {
-        color: rgb(255, 164, 28);
-        background-color: transparent;
-        text-decoration: underline;
-      }
-a:active {
-        color: yellow;
-        background-color: transparent;
-        text-decoration: underline;
-      }
+    text-decoration: none;
+  }
 
+  a:visited {
+    color: rgb(76, 142, 145);
+    background-color: transparent;
+    text-decoration: none;
+  }
 
-      /* her er de styles der blev brugt til barcharten */
-      
-        
-        .axis line{
-          stroke: white;
-        }
-        
-        .axis path{
-          stroke: white;
-        }
-        
-        .axis text{
-          fill: white;
-        } 
-        #tooltip {
-          position: absolute;
-          pointer-events: none;
-        }
-        #tooltip.hidden{
-          display: none;
-        }
+  a:hover {
+    color: rgb(255, 164, 28);
+    background-color: transparent;
+    text-decoration: underline;
+  }
+
+  a:active {
+    color: yellow;
+    background-color: transparent;
+    text-decoration: underline;
+  }   
+
+     
+    

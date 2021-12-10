@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>bobler</title>
+    <title>US. food waste</title>
     <script type="text/javascript" src="d3.js"></script>
     <script type="text/javascript" src="main2.js"></script>
     <link rel="stylesheet" href="style.css">
@@ -15,27 +15,31 @@
 </head>
 <body>
 <div class="intro">
-    <h1>US FOODWASTE </h1>
+    <h1>US. FOODWASTE </h1>
     <h2>Explore the data!</h2>
-    <h3>The US is wasting A LOT of their food-supply. It is a problem throughout most of the supplychain. Join us, while we dive deeper into the numbers.</h3>
+    <h3>The US is wasting <span style="color: rgb(255,125,0)"> A LOT</span> of their food-supply - It is a problem throughout most of the supplychain <br> Join us, while we dive deeper into the numbers</h3>
 </div>
 
 <div id="grid">
     <div class="barchart"></div>
-    <div class="bartext">
-        <p1 class="btext">The barchart shows how food waste is distributed across the various sectors in the US. It is clearly showing that escpecially residential throws out a large percantage of the food. </p1>
+    <div class="barchartText">
+        <p1>How is food waste distributed across the various sectors in the US.<span style="color: rgb(255,125,0)">?</span> </p1>
     </div>
     </div>
     <div id="grid2">
-<div class="ctext">
-    <p1>The US. foodwaste leaves behind a massive co2 footprint. The major threat from increased CO2 is the greenhouse effect. As a greenhouse gas, excessive CO2 creates a cover that traps the sun´s heat energy in the atmospheric bubble, warming the planet and the oceans. <br> The circles put thing into perspective.</p1>
+<div class="spiralText">
+    <p1>The US. foodwaste leaves behind a <span style="color: rgb(255,125,0)">massive CO2 footprint.</span>
+      The major threat from increased CO2 is the greenhouse effect. 
+      As a greenhouse gas, excessive CO2 creates a cover that traps the sun´s heat energy in the atmospheric bubble, 
+      warming the planet and the oceans.</p1>
 </div>
-<div class="svgboks"></div>
+<div class="spiral"></div>
 </div>
 <div id="grid3">
   <div class="treemap"></div>
   <div class="treemapText">
-    <p1>Causes for food waste in the residential sector</p1>
+    <p1>The main causes for food waste in the residential sector in 2019.<br><br> 
+      <span style="font-weight: bold">What can <span style="color: rgb(255,125,0)">YOU</span> do to change your habbits?</span></p1>
   </div>
 </div>
 <footer>
@@ -44,8 +48,6 @@
     <b>© 2021 HVER-GUDERNE A/S</b></p>
   </footer>
 
-
-    
     <script>
 // højde og bredde på mit svg element
 const w = 800;
@@ -75,7 +77,7 @@ let funfacts = [
 const rScale = d3.scaleLinear()
         .domain([0, 168700000])
         .range([0, 24000]);
-const svg = d3.select(".svgboks")
+const svg = d3.select(".spiral")
         .append("svg")
         .attr("width", w)
         .attr("height", h)
@@ -127,7 +129,7 @@ const svg2 = d3.select(".barchart")
        
 // set the width, height and margins of the graph
 const width = 740;
-const height = 700
+const height = 700;
 
 // append the svg object to the page
 const svg3 = d3.select(".treemap")
@@ -190,11 +192,11 @@ layer2.selectAll("circle")
   .on('zoom', handleZoom);
 
   function handleZoom(e) {
-  d3.selectAll('.svgboks g')
+  d3.selectAll('.spiral g')
     .attr('transform', e.transform);};
 if(control === 0){
   control=10;
-  d3.select('.svgboks').transition("overallzoom").duration("200").call(zoom.scaleTo, 9);
+  d3.select('.spiral').transition("overallzoom").duration("200").call(zoom.scaleTo, 9);
 
 d3.select(this).transition("cirkel_position").duration('200')
       .attr("cx", w*0.5)
@@ -238,7 +240,7 @@ d3.select(this).transition("cirkel_position").duration('200')
 
 
       else if(control === 10){
-        d3.select('.svgboks').transition().duration(500).call(zoom.scaleTo, 1);
+        d3.select('.spiral').transition().duration(500).call(zoom.scaleTo, 1);
 
 d3.select(this).transition("rewinder").duration('500')
     .attr("cx", function(d){
@@ -396,7 +398,6 @@ for (let i = 0; i < data.length; i++) {
     function handleMouseout(d, i){
       d3.select(this).style("fill", "rgb(255,125,0)");
       return tooltip.style("visibility", "hidden")
-    
     }
 
   //TODO
@@ -417,14 +418,12 @@ for (let i = 0; i < data.length; i++) {
     .domain([0,supplyArray.length])
     .range([padding + 55, bw - padding + 35]);
 
-
         //laver layers
         let layer1b = svg2.append('g')
         let layer2b = svg2.append('g')
         let layer3b = svg2.append('g')
 
       // Create bars for supply(grey)
-      
       layer1b.selectAll("rect")
       .data(newArray)
       .enter()
@@ -488,7 +487,7 @@ for (let i = 0; i < data.length; i++) {
       })
       .attr("y", bh - 20)
       .style("font-family", "monospace")
-      .attr("font-size", "11px")
+      .attr("font-size", "12px")
       .attr("fill", "white")
       .attr("text-anchor", "middle");
 
@@ -499,9 +498,9 @@ for (let i = 0; i < data.length; i++) {
          .attr("transform", "translate(0, " + (bh - padding) + ")")
          .call(xAxis)
          .append("text")
-         .attr("text-anchor", "end")
+         .attr("text-anchor", "middle")
          .attr("fill", "white")
-         .attr("transform", `translate(${bw}, 10)`)
+         .attr("transform", `translate(${bw}, 8)`)
          .text("Sector")
          .style("font-family", "monospace");
          
@@ -512,7 +511,9 @@ for (let i = 0; i < data.length; i++) {
          .attr("transform", "translate(" + 70 + ",0)")
          .call(yAxis)
          .append("text")
-         .attr("text-anchor", "start")
+         //.attr("text-anchor", "start")
+         .attr("x", 115)
+         .attr("y", 0)
          .attr("fill", "white")
          .attr("transform", "translate(-70, 28)")
          .text("Million Tons")
@@ -535,13 +536,15 @@ const tooltip2 = d3.select("#my_dataviz")
 .style("border-color", "white")
 .style("font-family", "monospace")
 .style("font-size", "12px")
+.style("white-space", "pre-line")
 .text("");
 
 // handles what happens on mousemove
-function handleMousemove (event, d){
+function handleMousemoveRect (event, d){
+  const name = d.data.name;
   const tons = d.data.tons;
   const procent = d.data.procent;
-  const text = `${tons} - ${procent}%`
+  const text = `${name}\n ${tons} - ${procent}%`
   d3.select(this).style("fill", "rgb(255,105,30)")
   tooltip2.text(text)
   var x = event.clientX;
@@ -552,8 +555,27 @@ function handleMousemove (event, d){
 }
 
 // handles what happens on mouseout
-function handleMouseout2(){
+function handleMouseoutRect(){
   d3.select(this).style("fill", "rgb(255,125,0)")
+  return tooltip2.style("visibility", "hidden")
+}
+
+function handleMousemoveText (event, d){
+  const name = d.data.name;
+  const tons = d.data.tons;
+  const procent = d.data.procent;
+  const text = `${name}\n ${tons} - ${procent}%`
+  tooltip2.text(text)
+  var x = event.clientX;
+  var y = event.clientY;
+  tooltip2.style("left", (window.pageXOffset + x + 10) + "px")
+  tooltip2.style("top", (window.pageYOffset + y + 10) + "px")
+  d3.select(this).style("cursor", "default")
+  return tooltip2.style("visibility", "visible")
+}
+
+// handles what happens on mouseout
+function handleMouseoutText(){
   return tooltip2.style("visibility", "hidden")
 }
 
@@ -582,8 +604,8 @@ d3.json("causes.json").then(function(data) {
       .attr('width', function (d) { return d.x1 - d.x0; })
       .attr('height', function (d) { return d.y1 - d.y0; })
       .style("fill", "rgb(255,125,0)")
-      .on("mousemove", handleMousemove)
-      .on("mouseout", handleMouseout2)
+      .on("mousemove", handleMousemoveRect)
+      .on("mouseout", handleMouseoutRect)
 
   // and to add the text labels
   layer2t
@@ -594,12 +616,13 @@ d3.json("causes.json").then(function(data) {
     .attr("x", function(d) { return d.x0 + 5})
     .attr("y", function(d) { return d.y0 + 20})   
     .text(function(d) { return d.data.name})
-    .attr("text-overflow", "ellipsis")
-    .attr("word-wrap", "break-all")    
+    .attr("text-overflow", "ellipsis")    
     .attr("font-size", "12px")
     .attr("fill", "white")
     .attr("font-weight", "bold")
     .style("font-family", "monospace") 
+    .on("mousemove", handleMousemoveText)
+    .on("mouseout", handleMouseoutText)
 })
 })
             
