@@ -61,8 +61,8 @@ const xplacement = [convertXPlacement(300), convertXPlacement(320), convertXPlac
 const yplacement = [convertYPlacement(300), convertYPlacement(320), convertYPlacement(350), convertYPlacement(25), convertYPlacement(72), convertYPlacement(130), convertYPlacement(190), convertYPlacement(260)] 
 
 //jeg kan ikke finde ud af at loope igennem key value pair så det skal jeg lige fikse, her er et array med tallene i + navnene på fx firmaerne
-let co2arr = [75544.6, 7555557.5, 12500000, 44900000, 86500000, 110640000, 131000000, 168700000]
-let co2names = ["Passenger vehicle", "US Household", "Google", "IKEA", "New York City","Amazon", "Denmark", "US Foodwaste"]
+let co2arr = [1100000, 5240000, 15000000, 35500000, 60640000, 104000000, 126158000, 168700000]
+let co2names = ["LEGO", "Coca-Cola", "Samsung", "Maersk", "Amazon","US ARMY x2", "Scandinavia", "US Foodwaste"]
 let funfacts = [
   "Fun fact:@her er en fun fact",
   "Fun fact:@her er en fun fact",
@@ -155,13 +155,23 @@ layer2.selectAll("circle")
         return yplacement[i]
     } )
     .attr("r", 5)
-    .attr("fill", "rgb(255,125,0)")
+    .attr("fill", function(d, i){
+      let r = 144
+      let g = 90
+      let b = 90
+      return 'rgb(' + (r+4*i) + ','+(g-8*i)+',' + (b-8*i) + ')'
+    })
     .attr("class", "circles")
     .on('mouseover', function (d, i) {
      d3.select(this).transition("mouseover")
           .duration('5')
           .attr("opacity", 1)
-          .attr("fill", "rgb(255,105,30)")
+          .attr("fill", function(d){
+      let r = 134
+      let g = 80
+      let b = 80
+      return 'rgb(' + (r+4*i) + ','+(g-8*i)+',' + (b-8*i) + ')'
+    })
           .style("cursor", "pointer")
         })
           .style("cursor", "pointer")
@@ -169,7 +179,12 @@ layer2.selectAll("circle")
      d3.select(this).transition("mouseout")
           .duration('5')
           .attr("opacity", 1)
-          .attr("fill", "rgb(255,125,0)")
+          .attr("fill", function(d){
+      let r = 144
+      let g = 90
+      let b = 90
+      return 'rgb(' + (r+4*i) + ','+(g-8*i)+',' + (b-8*i) + ')'
+    })
           .style('cursor', 'default')        
         })
     .on("click", function(d, i){
@@ -252,10 +267,10 @@ let control = 0
         .append("text")
         .attr("x", function(d, i){
             if(i < 2){ return xplacement[i] + 10 + (i*12)}
-            else if (i < 3){ return xplacement[i] + (i*14)}
-            else if (i < 5){ return xplacement[i] + (i*18)}
-            else if (i < 6){ return xplacement[i] - (i*27)}
-            else if (i < 7){ return xplacement[i] - (i*25)}
+            else if (i < 3){ return xplacement[i] + (i*16)}
+            else if (i < 5){ return xplacement[i] + (i*16)}
+            else if (i < 6){ return xplacement[i] - (i*34)}
+            else if (i < 7){ return xplacement[i] - (i*31)}
             else if (i < 8){ return xplacement[i] - (i*30)}
         })
         .attr("y", function(d, i){
@@ -263,6 +278,11 @@ let control = 0
         })
         .text(function(d){return d})
         .attr("fill", "white")
+        .attr("font-family", "'Source Code Pro', monospace")
+        .style("text-decoration", "underline")
+
+        //og nu tekst som overskrift
+        layer2.append("text").text("CO2 footprint/year").attr("x", 500).attr("y", 80).style("font-size", "24px").attr("fill", "rgb(194,50,70)").style("font-weight", "bold")
         .attr("font-family", "'Source Code Pro', monospace")
 
 // her laver jeg animationen der sker når man ruller ned på siden
