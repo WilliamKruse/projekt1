@@ -32,7 +32,7 @@ svg {
     font-size: large
     
 ;}
-.svgboks {
+.spiral {
     grid-column-start: 3;
     grid-column-end: 4;
 }
