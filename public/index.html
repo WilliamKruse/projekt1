@@ -413,19 +413,23 @@ for (let i = 0; i < data.length; i++) {
     }
 
   //Her laver vi scales til barcharten
+  //der er magiske tal over alt for at rette det hele til
+
+  //den her bliver kun brugt til at lave x-aksen
     let xScale = d3.scaleLinear()
     .domain(0, supplyArray.length)
     .range([padding+30,bw - padding]);
-// de to lidt magiske tal kan rettes
+
+//
     let yScale = d3.scaleLinear()
     .domain([0,d3.max(supplyArray)])
     .range([padding ,bh - padding-19]);
 
+    //en ny y scale lavet for at få domain til at blive en million gange mindre, så bliver aksen pæn med et max på 350.(bliver kun brugt én gang til aksen)
     let nyyScale = d3.scaleLinear()
     .domain([d3.max(supplyArray)/1000000 + 19, 0])
     .range([padding,bh - padding]);
     
-//de her paddings er midlertidge
     let barXScale = d3.scaleLinear()
     .domain([0,supplyArray.length])
     .range([padding + 55, bw - padding + 35]);
@@ -435,7 +439,7 @@ for (let i = 0; i < data.length; i++) {
         let layer2b = svg2.append('g')
         let layer3b = svg2.append('g')
 
-      // Create bars for supply(grey)
+      // laver grå bars med en height på 0 så ændre vi den i transistion.
       layer1b.selectAll("rect")
       .data(newArray)
       .enter()
@@ -447,7 +451,7 @@ for (let i = 0; i < data.length; i++) {
       .attr("width", bw / wasteArray.length - barPadding)
       .attr("height", 0)
       .attr("fill", "rgb(128,128,128)");
-
+//transition
       layer1b.selectAll("rect")
           .data(newArray)
           .transition()
@@ -459,7 +463,8 @@ for (let i = 0; i < data.length; i++) {
           .attr("height", function(d) { return yScale(d[0])- padding
       } )
 
-      // Create bars for tons_wasted(orange)
+      /* laver orange bars præcis som de grå, men disse har mouseover events, de er skrevet et andet sted som en funtion,
+       men de ændre bare farver og viser tooltip*/
       layer2b.selectAll("rect")
       .data(newArray)
       .enter()
@@ -473,7 +478,7 @@ for (let i = 0; i < data.length; i++) {
       .attr("fill", "rgb(255,125,0)")
       .on("mouseover", handleMouseover)  
       .on("mouseout", handleMouseout)
-      
+      //transition
       layer2b.selectAll("rect")
           .data(newArray)
           .transition()
@@ -486,7 +491,7 @@ for (let i = 0; i < data.length; i++) {
       } )
           .delay(function(d, i){return 300 +i * 150})
 
-      // create sector name
+      // skriver "ticks" til x aksen. de bliver sat center(x-aksen) men det er center på den venste side af søjlen så vi plusser 30 px
       layer3b.selectAll("text")
       .data(newArray)
       .enter()
@@ -503,7 +508,7 @@ for (let i = 0; i < data.length; i++) {
       .attr("fill", "white")
       .attr("text-anchor", "middle");
 
-      // Create xAxis
+      // laver x-aksen og translater den så den er i bunden
       const xAxis = d3.axisBottom().scale(xScale);
       svg2.append("g")
          .attr("class", "axis")
@@ -516,14 +521,14 @@ for (let i = 0; i < data.length; i++) {
          .text("Sector")
          .style("font-family", "monospace");
          
-      // Create yAxis
+      // laver y aksen og hardcoder ticks så det ser pænt ud. det var derfor vi plusser nyyscale med 19. så ramte vi et max på 350
       yAxis = d3.axisLeft().scale(nyyScale).tickValues([0,50, 100, 150, 200, 250, 300, 350]);
       svg2.append("g")
          .attr("class", "axis")
          .attr("transform", "translate(" + 70 + ",0)")
          .call(yAxis)
          .append("text")
-         //.attr("text-anchor", "start")
+         //bliver nødt til at hardcode koordinaterne så det ser pænt ud
          .attr("x", 115)
          .attr("y", 0)
          .attr("fill", "white")
@@ -531,11 +536,13 @@ for (let i = 0; i < data.length; i++) {
          .text("Million Tons")
          .style("font-family", "monospace");
 
-  // Treemap
+  // her starter Treemap
+
+  //laver layers
 let layer1t = svg3.append('g')
 let layer2t = svg3.append('g') 
 
-// defines the tooltip   
+// laver toolip og appender den på div, men den er usynlig(hidden) indtil vi ændre det med mouseover  
 const tooltip2 = d3.select("#tiptool")
 .append("div")
 .style("position", "absolute")
@@ -551,7 +558,9 @@ const tooltip2 = d3.select("#tiptool")
 .style("white-space", "pre-line")
 .text("");
 
-// handles what happens on mousemove
+// laver en handle functioner der bestemmer hvad der skal ske hvis man hover på treemap
+
+//her er hver der sker når man holder musen over, vi ændre farven og viser tooltip + indsætter tekst på tooltipped alt efter hvilet rect man hover
 function handleMousemoveRect (event, d){
   const name = d.data.name;
   const tons = d.data.tons;
@@ -566,12 +575,12 @@ function handleMousemoveRect (event, d){
   return tooltip2.style("visibility", "visible")
 }
 
-// handles what happens on mouseout
+// dette sker hvis man fjerner musen igen, her bliver farven " normal igen" og tooltipped bliver hidden
 function handleMouseoutRect(){
   d3.select(this).style("fill", "rgb(255,125,0)")
   return tooltip2.style("visibility", "hidden")
 }
-
+//det samme skal ske hvis man skulle hover over teksen i treemappet så vi lave samme kode igen bare uden farven.
 function handleMousemoveText (event, d){
   const name = d.data.name;
   const tons = d.data.tons;
@@ -586,26 +595,27 @@ function handleMousemoveText (event, d){
   return tooltip2.style("visibility", "visible")
 }
 
-// handles what happens on mouseout
 function handleMouseoutText(){
   return tooltip2.style("visibility", "hidden")
 }
 
-// read json data
+// loader vores json-fil ind
 d3.json("causes.json").then(function(data) {
 
-  // here the size of each leave is given in the 'procent' 
+  // her får vi en procent fra d3 af hvor stor hver rect skal være i svg feltet(treemap størrelser laves af d3)
   const root = d3.hierarchy(data).sum(function(d){ 
     return d.procent
   }) 
 
-  // Then d3.treemap computes the position of each element of the hierarchy
+  // D3 laver treemap og vi giver den padding info samt størrelse
   d3.treemap()
     .size([width, height])
     .padding(5)
     (root)
 
-  // use this information to add rectangles:
+  /* her laver appender vi rects med "root" som data, d3 finder selv ud af hvordan der skal se ud.
+   Det er her vi bruger vores tidligere definerede handle functioners */
+  
   layer1t
     .selectAll("rect")
     .data(root.leaves())
@@ -619,7 +629,7 @@ d3.json("causes.json").then(function(data) {
       .on("mousemove", handleMousemoveRect)
       .on("mouseout", handleMouseoutRect)
 
-  // and to add the text labels
+  // tilføjer tekst til hver boks
   layer2t
     .selectAll("text")
     .data(root.leaves())
