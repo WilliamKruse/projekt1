@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com"> 
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> 
     <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@500;700&display=swap" rel="stylesheet">
-    <div id="my_dataviz"></div>
+    <div id="tiptool"></div>
 </head>
 <body>
 <div class="intro">
@@ -49,18 +49,20 @@
   </footer>
 
     <script>
-// højde og bredde på mit svg element
+// højde og bredde på mit svg element(til spiral)
 const w = 800;
 const h = 622.22;
+//her vælger jeg hvor cirklerne skal placeres. Rad er radius på den cirkel cirklerne bliver "tegnet på ydersiden af".
 const rad = h*0.33;
 const pi = Math.PI;
+//her laver jeg jeg functioner der kan regne x og y kordinaterne hvis jeg giver dem den grad.(bemærk js bruger radianer og ikek grader)
 function convertXPlacement(degree){return w/2 + rad * Math.cos(degree*0.0174532925)}
 function convertYPlacement(degree){return h/2 + rad * Math.sin(degree*0.0174532925)}
-// værdier jeg skal bruge til boblernes størrelse og placering
+// Her laver jeg så et array men manuelt indsatte grader. Dem skal jeg bruge når jeg kalder .data i d3
 const xplacement = [convertXPlacement(300), convertXPlacement(320), convertXPlacement(350), convertXPlacement(25), convertXPlacement(72), convertXPlacement(130), convertXPlacement(190), convertXPlacement(260)]
 const yplacement = [convertYPlacement(300), convertYPlacement(320), convertYPlacement(350), convertYPlacement(25), convertYPlacement(72), convertYPlacement(130), convertYPlacement(190), convertYPlacement(260)] 
 
-//jeg kan ikke finde ud af at loope igennem key value pair så det skal jeg lige fikse, her er et array med tallene i + navnene på fx firmaerne
+//Her har jeg lavet tre arrays med data jeg skal bruge til cirklernes størrelse og nametags. Funfacts er også et array jeg kalder når man zoomer ind.
 let co2arr = [1100000, 5240000, 15000000, 35500000, 60640000, 104000000, 126158000, 168700000]
 let co2names = ["LEGO", "Coca-Cola", "Samsung", "Maersk", "Amazon","US ARMY x2", "Scandinavia", "US Foodwaste"]
 let funfacts = [
@@ -73,27 +75,34 @@ let funfacts = [
   "Fun fact:@her er en fun fact",
   "Fun fact:@her er en fun fact"
 ]
-//lav en svg boks til boblerne og en scale til mine radiusser, min range er lidt åndsvag fordi jeg ikke skal bruge radius men areal. kan måske godt se der er noget galt
+//Her er an scale der udelukkende bruges til co2arr. domain går op til co2 footprint max, altså den største cirkel(us foodwaste) og range er maksimal areal i pixels.
 const rScale = d3.scaleLinear()
         .domain([0, 168700000])
         .range([0, 24000]);
+//her laver jeg svg feltet der skal bruges til spiralen og appender den på min div med classen "spiral"
 const svg = d3.select(".spiral")
         .append("svg")
         .attr("width", w)
         .attr("height", h)
 
-//svg boks til barcharten
+//laver layers til spiralen, så render rækkefælgen er nem at kontrollere
+let layer1 = svg.append('g')
+let layer2 = svg.append('g')
+let layer3 = svg.append('g')
+let invis = layer1.append("svg").attr("opacity",100).attr("x", 138).attr("y", 94).attr("width", w*0.61).attr("height", h*0.71).attr("id", "boks");
+
+//nyt svg felt til barcharten(her er noget galt, width og height er hardcoded, burde hedder bh og bw, men værdierne stemmer ikke overens)
 
 const svg2 = d3.select(".barchart")
         .append("svg")
         .attr("width", 750)
         .attr("height", 400)
 
-// To g bokse
+// laver layers til svg2, så det er nemmere at vælge hvad der skal renderes først. bliver kun brugt til den lille boks der fortæller hvad de forskellige farver bars betyder
         var box1 = svg2.append('g')
         var box2 = svg2.append('g')
 
-// Grå firkant og tekst.
+// grå firkant og tekst
         box1.append("rect")
           .attr('x', 650)
           .attr('y', 38)
@@ -127,23 +136,20 @@ const svg2 = d3.select(".barchart")
           .style("font-family", "monospace")
           .attr("font-size", "11px")
        
-// set the width, height and margins of the graph
+// height og width sat til treemap
 const width = 740;
 const height = 700;
 
-// append the svg object to the page
+// laver svg felt til treemap
 const svg3 = d3.select(".treemap")
 .append("svg")
   .attr("width", width)
   .attr("height", height)    
 
-//prøver at lave et par layers
-let layer1 = svg.append('g')
-let layer2 = svg.append('g')
-let layer3 = svg.append('g')
-let invis = layer1.append("svg").attr("opacity",100).attr("x", 138).attr("y", 94).attr("width", w*0.61).attr("height", h*0.71).attr("id", "boks");
 
-//nu laver jeg lige de orange cirkler
+
+// Laver cirkler til spiralen. farven skifter jo flere cirkler der bliver lavet.
+//mouseover og click events er lidt komplicerede, men forklare det nedenunder.
 layer2.selectAll("circle")
     .data(co2arr)
     .enter()
@@ -188,6 +194,7 @@ layer2.selectAll("circle")
           .style('cursor', 'default')        
         })
     .on("click", function(d, i){
+
       let zoom = d3.zoom()
   .on('zoom', handleZoom);
 
@@ -258,9 +265,18 @@ d3.select(this).transition("rewinder").duration('500')
 
     });
 let control = 0
+/*forklaring til cirklernes click og hover effekt:
 
+hover er nem nok: hvis man holder over cirklen bliver rgb skruet ned med 10 på alle tre farver.
+Det er lavet som en function fordi hver fave er forkellig. Og justeres eftere "i"
 
-//nu laver jeg lige nogle små nameplates til mine cirkler
+click: mere avancere forklaring er i selve koden men tdlr er: når man klikker kan der ske to ting;
+1. hvis man ikke er zoomet ind er "conrol" sat til 0(dette kunne også være true/false), hvis man zoomer bliver den sat til 10. 
+ved zoom bliver der lavet tre nye tekst elementer i midten og zoomscale bliver sat til 9, den cirkel der bliver klikket får en radius på 29(magisk tal) og bliver centreret.
+2. hvis man allerede er zoomed in er kontrol på 10 og "else if" functionen bliver aktiveret. den sætter alt tilbage som der var før og resetter control tallet
+*/
+
+//Navne på cirklerne, deres placement er samme som cirkler men forskudt med et antal pixels på x-aksen, også lidt magiske tal her for ét tal kunne ikke gøre det
     layer2.selectAll("text")
         .data(co2names)
         .enter()
@@ -281,6 +297,9 @@ let control = 0
         .attr("font-family", "'Source Code Pro', monospace")
         .style("text-decoration", "underline")
 
+
+
+
         //og nu tekst som overskrift
         layer2.append("text")
         .text("CO2 footprint/year")
@@ -291,18 +310,20 @@ let control = 0
         .style("font-weight", "bold")
         .attr("font-family", "'Source Code Pro', monospace")
 
-// her laver jeg animationen der sker når man ruller ned på siden
+// her udregner jeg hvad cirklernes radius skal være, da radius og areal er to helt forskellige ting og ikke følges linært
         let optarr = []
         for(let i = 0; i < 8; i++){
             optarr.push(Math.sqrt(rScale(co2arr[i])/pi))
         }
         console.log(optarr)
-        let hej = 0
-        // okay nu prøver vi at lave en transistion der gør noget når jeg har scrolled ned på siden. vil gøre boblerne store når vi rammer en hvis mængde pixels fra toppen
+
+        // her laver jeg en function der trigger når man har scrolled ned på siden. det eneste den gør at at lave radius om til det korrekte.
+        let scrolled = false
+        
         function scrolldown(){
-          if(hej === 0){
+          if(scrolled === false){
             if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 110){
-              hej = 1;
+              scrolled = true;
             layer2.selectAll("circle")
                 .data([1,2,3,4,5,6,7,8])
                 .transition()
@@ -313,19 +334,13 @@ let control = 0
             })
                 .delay(function(i){return (i*120)})
                 
-                ;
-                
-               
-}
+                ;}
           }
 };
-        //nu skal jeg have en eventhandler der kan trigger min function
-       /* let count = 0
-        if(count == 0){window.onscroll = function() {scrolldown()};}*/
         window.onscroll = function() {scrolldown()};
 
 
-        //Barchart
+        //Barchart starter her, skal også bruge nogle basic values så som w h og padding
 
     
     const bw = 700;
@@ -343,25 +358,25 @@ let control = 0
       const data = response.data; // Hent data ud af response
       console.log("data", data[0]);
 
-      //Tons supply bliver fundet i data
+      //Tons supply bliver fundet i data og pushed til et array der er nemt at bruge i d3
       let supplyArray = [];
       for (let i = 0; i < data.length; i++) {
         supplyArray.push(data[i].supply);
       }
 
-      //Tons waste bliver fundet i data
+      //Tons waste bliver fundet i data og pushed til et array der er nemt at bruge i d3
       let wasteArray = [];
     for (let i = 0; i < data.length; i++) {
       wasteArray.push(data[i].tons_wasted);
     }
 
-      //Sektor bliver fundet i data
+      //Sektor bliver fundet i data og pushed til et array der er nemt at bruge i d3
     let textArray = []
      for (let i = 0; i < data.length; i++) {
       textArray.push(data[i].sector);
     }
 
-    //Procent waste bliver fundet i data
+    //Procent waste bliver fundet i data og pushed til et array der er nemt at bruge i d3
     let procentWasteArray = []
 for (let i = 0; i < data.length; i++) {
   procentWasteArray.push(data[i].procent_wasted);
@@ -374,7 +389,7 @@ for (let i = 0; i < data.length; i++) {
     }
 
     //Tooltip til visning af procent
-    const tooltip = d3.select("#my_dataviz")
+    const tooltip = d3.select("#tiptool")
     .append("div")
     .style("position", "absolute")
     .style("visibility", "hidden")
@@ -406,20 +421,24 @@ for (let i = 0; i < data.length; i++) {
       return tooltip.style("visibility", "hidden")
     }
 
-  //TODO
+  //Her laver vi scales til barcharten
+  //der er magiske tal over alt for at rette det hele til
+
+  //den her bliver kun brugt til at lave x-aksen
     let xScale = d3.scaleLinear()
     .domain(0, supplyArray.length)
     .range([padding+30,bw - padding]);
-// de to lidt magiske tal kan rettes
+
+//
     let yScale = d3.scaleLinear()
     .domain([0,d3.max(supplyArray)])
     .range([padding ,bh - padding-19]);
 
+    //en ny y scale lavet for at få domain til at blive en million gange mindre, så bliver aksen pæn med et max på 350.(bliver kun brugt én gang til aksen)
     let nyyScale = d3.scaleLinear()
     .domain([d3.max(supplyArray)/1000000 + 19, 0])
     .range([padding,bh - padding]);
     
-//de her paddings er midlertidge
     let barXScale = d3.scaleLinear()
     .domain([0,supplyArray.length])
     .range([padding + 55, bw - padding + 35]);
@@ -429,7 +448,7 @@ for (let i = 0; i < data.length; i++) {
         let layer2b = svg2.append('g')
         let layer3b = svg2.append('g')
 
-      // Create bars for supply(grey)
+      // laver grå bars med en height på 0 så ændre vi den i transistion.
       layer1b.selectAll("rect")
       .data(newArray)
       .enter()
@@ -441,7 +460,7 @@ for (let i = 0; i < data.length; i++) {
       .attr("width", bw / wasteArray.length - barPadding)
       .attr("height", 0)
       .attr("fill", "rgb(128,128,128)");
-
+//transition
       layer1b.selectAll("rect")
           .data(newArray)
           .transition()
@@ -453,7 +472,8 @@ for (let i = 0; i < data.length; i++) {
           .attr("height", function(d) { return yScale(d[0])- padding
       } ) 
 
-      // Create bars for tons_wasted(orange)
+      /* laver orange bars præcis som de grå, men disse har mouseover events, de er skrevet et andet sted som en funtion,
+       men de ændre bare farver og viser tooltip*/
       layer2b.selectAll("rect")
       .data(newArray)
       .enter()
@@ -467,7 +487,7 @@ for (let i = 0; i < data.length; i++) {
       .attr("fill", "rgb(255,125,0)")
       .on("mouseover", handleMouseover)  
       .on("mouseout", handleMouseout)
-      
+      //transition
       layer2b.selectAll("rect")
           .data(newArray)
           .transition()
@@ -481,7 +501,7 @@ for (let i = 0; i < data.length; i++) {
       } )
       
 
-      // create sector name
+      // skriver "ticks" til x aksen. de bliver sat center(x-aksen) men det er center på den venste side af søjlen så vi plusser 30 px
       layer3b.selectAll("text")
       .data(newArray)
       .enter()
@@ -498,7 +518,7 @@ for (let i = 0; i < data.length; i++) {
       .attr("fill", "white")
       .attr("text-anchor", "middle");
 
-      // Create xAxis
+      // laver x-aksen og translater den så den er i bunden
       const xAxis = d3.axisBottom().scale(xScale);
       svg2.append("g")
          .attr("class", "axis")
@@ -511,14 +531,14 @@ for (let i = 0; i < data.length; i++) {
          .text("Sector")
          .style("font-family", "monospace");
          
-      // Create yAxis
+      // laver y aksen og hardcoder ticks så det ser pænt ud. det var derfor vi plusser nyyscale med 19. så ramte vi et max på 350
       yAxis = d3.axisLeft().scale(nyyScale).tickValues([0,50, 100, 150, 200, 250, 300, 350]);
       svg2.append("g")
          .attr("class", "axis")
          .attr("transform", "translate(" + 70 + ",0)")
          .call(yAxis)
          .append("text")
-         //.attr("text-anchor", "start")
+         //bliver nødt til at hardcode koordinaterne så det ser pænt ud
          .attr("x", 115)
          .attr("y", 0)
          .attr("fill", "white")
@@ -526,12 +546,14 @@ for (let i = 0; i < data.length; i++) {
          .text("Million Tons")
          .style("font-family", "monospace");
 
-  // Treemap
+  // her starter Treemap
+
+  //laver layers
 let layer1t = svg3.append('g')
 let layer2t = svg3.append('g') 
 
-// defines the tooltip   
-const tooltip2 = d3.select("#my_dataviz")
+// laver toolip og appender den på div, men den er usynlig(hidden) indtil vi ændre det med mouseover  
+const tooltip2 = d3.select("#tiptool")
 .append("div")
 .style("position", "absolute")
 .style("visibility", "hidden")
@@ -546,7 +568,9 @@ const tooltip2 = d3.select("#my_dataviz")
 .style("white-space", "pre-line")
 .text("");
 
-// handles what happens on mousemove
+// laver en handle functioner der bestemmer hvad der skal ske hvis man hover på treemap
+
+//her er hver der sker når man holder musen over, vi ændre farven og viser tooltip + indsætter tekst på tooltipped alt efter hvilet rect man hover
 function handleMousemoveRect (event, d){
   const name = d.data.name;
   const tons = d.data.tons;
@@ -561,12 +585,12 @@ function handleMousemoveRect (event, d){
   return tooltip2.style("visibility", "visible")
 }
 
-// handles what happens on mouseout
+// dette sker hvis man fjerner musen igen, her bliver farven " normal igen" og tooltipped bliver hidden
 function handleMouseoutRect(){
   d3.select(this).style("fill", "rgb(255,125,0)")
   return tooltip2.style("visibility", "hidden")
 }
-
+//det samme skal ske hvis man skulle hover over teksen i treemappet så vi lave samme kode igen bare uden farven.
 function handleMousemoveText (event, d){
   const name = d.data.name;
   const tons = d.data.tons;
@@ -581,26 +605,27 @@ function handleMousemoveText (event, d){
   return tooltip2.style("visibility", "visible")
 }
 
-// handles what happens on mouseout
 function handleMouseoutText(){
   return tooltip2.style("visibility", "hidden")
 }
 
-// read json data
+// loader vores json-fil ind
 d3.json("causes.json").then(function(data) {
 
-  // here the size of each leave is given in the 'procent' 
+  // her får vi en procent fra d3 af hvor stor hver rect skal være i svg feltet(treemap størrelser laves af d3)
   const root = d3.hierarchy(data).sum(function(d){ 
     return d.procent
   }) 
 
-  // Then d3.treemap computes the position of each element of the hierarchy
+  // D3 laver treemap og vi giver den padding info samt størrelse
   d3.treemap()
     .size([width, height])
     .padding(5)
     (root)
 
-  // use this information to add rectangles:
+  /* her laver appender vi rects med "root" som data, d3 finder selv ud af hvordan der skal se ud.
+   Det er her vi bruger vores tidligere definerede handle functioners */
+  
   layer1t
     .selectAll("rect")
     .data(root.leaves())
@@ -614,7 +639,7 @@ d3.json("causes.json").then(function(data) {
       .on("mousemove", handleMousemoveRect)
       .on("mouseout", handleMouseoutRect)
 
-  // and to add the text labels
+  // tilføjer tekst til hver boks
   layer2t
     .selectAll("text")
     .data(root.leaves())
