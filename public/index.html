@@ -401,13 +401,15 @@ for (let i = 0; i < data.length; i++) {
     .style("border-color", "white")
     .style("font-family", "monospace")
     .style("font-size", "12px")
+    .style("white-space", "pre-line")
     .text("");
 
 // Håndterer mouseover
     function handleMouseover (d, i) {
      d3.select(this).style("fill", "rgb(230,90,0)")
      const procentWaste = i[3]
-     tooltip.text("Procent wasted - " + procentWaste.toFixed(2) + "%")
+     const sectorName = i[2]
+     tooltip.text(sectorName + ":" + "\nProcent wasted - " + procentWaste.toFixed(2) + "%")
      var x1 = event.clientX;
      var y1 = event.clientY;
      tooltip.style("left", (window.pageXOffset + x1 + 10) + "px")
@@ -575,7 +577,7 @@ function handleMousemoveRect (event, d){
   const name = d.data.name;
   const tons = d.data.tons;
   const procent = d.data.procent;
-  const text = `${name}\n ${tons} - ${procent}%`
+  const text = name + ":" + "\n" + tons + " - " + procent + "%"
   d3.select(this).style("fill", "rgb(255,105,30)")
   tooltip2.text(text)
   var x = event.clientX;
@@ -595,7 +597,7 @@ function handleMousemoveText (event, d){
   const name = d.data.name;
   const tons = d.data.tons;
   const procent = d.data.procent;
-  const text = `${name}\n ${tons} - ${procent}%`
+  const text = name + ":" + "\n" + tons + " - " + procent + "%"
   tooltip2.text(text)
   var x = event.clientX;
   var y = event.clientY;
