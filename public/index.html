@@ -25,44 +25,51 @@
     <div class="barchartText">
         <p1><span style="color: rgb(255,125,0)">How</span> is food waste distributed across the various sectors in the US.? </p1>
     </div>
+</div>
+
+<div id="grid2">
+    <div class="spiralText">
+        <p1>The US. food waste leaves behind a <span style="color: rgb(255,125,0)">massive CO2 footprint.</span>
+          The major threat from increased CO2 is the greenhouse effect. 
+          As a greenhouse gas, excessive CO2 creates a cover that traps the sun´s heat energy in the atmospheric bubble, 
+          warming the planet and the oceans.</p1>
     </div>
-    <div id="grid2">
-<div class="spiralText">
-    <p1>The US. food waste leaves behind a <span style="color: rgb(255,125,0)">massive CO2 footprint.</span>
-      The major threat from increased CO2 is the greenhouse effect. 
-      As a greenhouse gas, excessive CO2 creates a cover that traps the sun´s heat energy in the atmospheric bubble, 
-      warming the planet and the oceans.</p1>
+    <div class="spiral"></div>
 </div>
-<div class="spiral"></div>
-</div>
+
 <div id="grid3">
-  <div class="treemap"></div>
-  <div class="treemapText">
-    <p1>Main causes of food waste in the residential sector in 2019.<br><br> 
-      <span style="font-weight: bold">What can <span style="color: rgb(255,125,0)">YOU</span> do to change your habbits?</span></p1>
-  </div>
+    <div class="treemap"></div>
+    <div class="treemapText">
+        <p1>Main causes of food waste in the residential sector in 2019.<br><br> 
+        <span style="font-weight: bold">What can <span style="color: rgb(255,125,0)">YOU</span> do to change your habbits?</span></p1>
+    </div>
 </div>
+
 <footer>
     <p>MADE BY: HVER-GUDERNE
     <a class="ref" href="https://refed.com/">DATAKILDE</a>
     <b>© 2021 HVER-GUDERNE A/S</b></p>
-  </footer>
+</footer>
 
-    <script>
+<script>
+
 // højde og bredde på mit svg element(til spiral)
 const w = 800;
 const h = 622.22;
-//her vælger jeg hvor cirklerne skal placeres. Rad er radius på den cirkel cirklerne bliver "tegnet på ydersiden af".
+
+// her vælger jeg hvor cirklerne skal placeres. Rad er radius på den cirkel cirklerne bliver "tegnet på ydersiden af".
 const rad = h*0.33;
 const pi = Math.PI;
-//her laver jeg jeg functioner der kan regne x og y kordinaterne hvis jeg giver dem den grad.(bemærk js bruger radianer og ikek grader)
+
+// her laver jeg jeg functioner der kan regne x og y kordinaterne hvis jeg giver dem den grad.(bemærk js bruger radianer og ikek grader)
 function convertXPlacement(degree){return w/2 + rad * Math.cos(degree*0.0174532925)}
 function convertYPlacement(degree){return h/2 + rad * Math.sin(degree*0.0174532925)}
-// Her laver jeg så et array men manuelt indsatte grader. Dem skal jeg bruge når jeg kalder .data i d3
+
+// her laver jeg så et array men manuelt indsatte grader. Dem skal jeg bruge når jeg kalder .data i d3
 const xplacement = [convertXPlacement(300), convertXPlacement(320), convertXPlacement(350), convertXPlacement(25), convertXPlacement(72), convertXPlacement(130), convertXPlacement(190), convertXPlacement(260)]
 const yplacement = [convertYPlacement(300), convertYPlacement(320), convertYPlacement(350), convertYPlacement(25), convertYPlacement(72), convertYPlacement(130), convertYPlacement(190), convertYPlacement(260)] 
 
-//Her har jeg lavet tre arrays med data jeg skal bruge til cirklernes størrelse og nametags. Funfacts er også et array jeg kalder når man zoomer ind.
+// her har jeg lavet tre arrays med data jeg skal bruge til cirklernes størrelse og nametags. Funfacts er også et array jeg kalder når man zoomer ind.
 let co2arr = [1100000, 5240000, 15000000, 35500000, 60640000, 104000000, 126158000, 168700000]
 let co2names = ["LEGO", "Coca-Cola", "Samsung", "Maersk", "Amazon","US ARMY x2", "Scandinavia", "US Foodwaste"]
 let funfacts = [
@@ -74,20 +81,23 @@ let funfacts = [
   ["Firing rockets emmit CO2.", "Plants do not..."],
   ["In 2008, Norway they knighted a pinguin.", "His name was Nils Olav!"],
   ["USDA set out a goal in 2015:", "Reduce food waste by 50% by 2030"]]
-//Her er an scale der udelukkende bruges til co2arr. domain går op til co2 footprint max, altså den største cirkel(us foodwaste) og range er maksimal areal i pixels.
+
+// her er an scale der udelukkende bruges til co2arr. domain går op til co2 footprint max, altså den største cirkel(us foodwaste) og range er maksimal areal i pixels.
 const rScale = d3.scaleLinear()
-        .domain([0, 168700000])
-        .range([0, 24000]);
-//her laver jeg svg feltet der skal bruges til spiralen og appender den på min div med classen "spiral"
+    .domain([0, 168700000])
+    .range([0, 24000]);
+
+// her laver jeg svg feltet der skal bruges til spiralen og appender den på min div med classen "spiral"
 const svg = d3.select(".spiral")
-        .append("svg")
-        .attr("width", w)
-        .attr("height", h)
+    .append("svg")
+    .attr("width", w)
+    .attr("height", h)
 
 //laver layers til spiralen, så render rækkefælgen er nem at kontrollere
 let layer1 = svg.append('g')
 let layer2 = svg.append('g')
 let layer3 = svg.append('g')
+
 //det her layer er kun for at rette svg spiralens størrelse og position. Der brude være en nemmere løsning men det her virkede
 let invis = layer1.append("svg").attr("opacity",100).attr("x", 138).attr("y", 94).attr("width", w*0.61).attr("height", h*0.71).attr("id", "boks");
 
@@ -96,50 +106,50 @@ let spiral = d3.xml("spiral.svg")
  .then(data => {
     d3.select("#boks").node().append(data.documentElement)
   });
-//nyt svg felt til barcharten(her er noget galt, width og height er hardcoded, burde hedder bh og bw, men værdierne stemmer ikke overens)
 
+//nyt svg felt til barcharten(her er noget galt, width og height er hardcoded, burde hedder bh og bw, men værdierne stemmer ikke overens)
 const svg2 = d3.select(".barchart")
-        .append("svg")
-        .attr("width", 750)
-        .attr("height", 400)
+    .append("svg")
+    .attr("width", 750)
+    .attr("height", 400)
 
 // laver layers til svg2, så det er nemmere at vælge hvad der skal renderes først. bliver kun brugt til den lille boks der fortæller hvad de forskellige farver bars betyder
-        var box1 = svg2.append('g')
-        var box2 = svg2.append('g')
+var box1 = svg2.append('g')
+var box2 = svg2.append('g')
 
 // grå firkant og tekst
-        box1.append("rect")
-          .attr('x', 650)
-          .attr('y', 38)
-          .attr("width", 15)
-          .attr("height", 15)
-          .attr('stroke', 'white')
-          .attr('fill', "rgb(128,128,128)")
+    box1.append("rect")
+        .attr('x', 650)
+        .attr('y', 38)
+        .attr("width", 15)
+        .attr("height", 15)
+        .attr('stroke', 'white')
+        .attr('fill', "rgb(128,128,128)")
 
-        box1.append('text')
-          .attr('x', 675)
-          .attr('y', 50)
-          .text("Tons supply")
-          .style("fill", "white")
-          .style("font-family", "monospace")
-          .attr("font-size", "11px")
+    box1.append('text')
+        .attr('x', 675)
+        .attr('y', 50)
+        .text("Tons supply")
+        .style("fill", "white")
+        .style("font-family", "monospace")
+        .attr("font-size", "11px")
  
 // Orange firkant og tekst.
-        box2.append('rect')
-          .attr('x', 650)
-          .attr('y', 68)
-          .attr("width", 15)
-          .attr("height", 15)
-          .attr('stroke', 'white')
-          .attr('fill', "rgb(255,125,0)")
+    box2.append('rect')
+        .attr('x', 650)
+        .attr('y', 68)
+        .attr("width", 15)
+        .attr("height", 15)
+        .attr('stroke', 'white')
+        .attr('fill', "rgb(255,125,0)")
 
-        box2.append('text')
-          .attr('x', 675)
-          .attr('y', 80)
-          .text("Tons wasted")
-          .style("fill", "white")
-          .style("font-family", "monospace")
-          .attr("font-size", "11px")
+    box2.append('text')
+        .attr('x', 675)
+        .attr('y', 80)
+        .text("Tons wasted")
+        .style("fill", "white")
+        .style("font-family", "monospace")
+        .attr("font-size", "11px")
        
 // height og width sat til treemap
 const width = 740;
@@ -147,42 +157,42 @@ const height = 700;
 
 // laver svg felt til treemap
 const svg3 = d3.select(".treemap")
-.append("svg")
-  .attr("width", width)
-  .attr("height", height)    
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height)    
 
-
-
-// Laver cirkler til spiralen. farven skifter jo flere cirkler der bliver lavet.
-//mouseover og click events er lidt komplicerede, men forklare det nedenunder.
+    
+//-------------------------------------------------------------------------------------------------------------------    
+// laver cirkler til spiralen. farven skifter jo flere cirkler der bliver lavet.
+// mouseover og click events er lidt komplicerede, men forklare det nedenunder.
 layer2.selectAll("circle")
     .data(co2arr)
     .enter()
     .append("circle")
     .attr("cx", function(d, i){
         return xplacement[i]
-    } ) 
+        }) 
     .attr("cy", function(d, i){
         return yplacement[i]
-    } )
+        })
     .attr("r", 5)
     .attr("fill", function(d, i){
-      let r = 144
-      let g = 90
-      let b = 90
-      return 'rgb(' + (r+4*i) + ','+(g-8*i)+',' + (b-8*i) + ')'
-    })
+        let r = 144
+        let g = 90
+        let b = 90
+          return 'rgb(' + (r+4*i) + ','+(g-8*i)+',' + (b-8*i) + ')'
+          })
     .attr("class", "circles")
-    .on('mouseover', function (d, i) {
-     d3.select(this).transition("mouseover")
+    .on('mouseover', function (d, i){
+      d3.select(this).transition("mouseover")
           .duration('5')
           .attr("opacity", 1)
           .attr("fill", function(d){
-      let r = 134
-      let g = 80
-      let b = 80
-      return 'rgb(' + (r+4*i) + ','+(g-8*i)+',' + (b-8*i) + ')'
-    })
+        let r = 134
+        let g = 80
+        let b = 80
+          return 'rgb(' + (r+4*i) + ','+(g-8*i)+',' + (b-8*i) + ')'
+          })
           .style("cursor", "pointer")
         })
           .style("cursor", "pointer")
@@ -191,95 +201,90 @@ layer2.selectAll("circle")
           .duration('5')
           .attr("opacity", 1)
           .attr("fill", function(d){
-      let r = 144
-      let g = 90
-      let b = 90
-      return 'rgb(' + (r+4*i) + ','+(g-8*i)+',' + (b-8*i) + ')'
-    })
+        let r = 144
+        let g = 90
+        let b = 90
+          return 'rgb(' + (r+4*i) + ','+(g-8*i)+',' + (b-8*i) + ')'
+          })
           .style('cursor', 'default')        
         })
     .on("click", function(d, i){
-
       let zoom = d3.zoom()
-  .on('zoom', handleZoom);
+    .on('zoom', handleZoom);
 
-  function handleZoom(e) {
+function handleZoom(e) {
   d3.selectAll('.spiral g')
-    .attr('transform', e.transform);};
-if(zoomedin == false){
-  zoomedin = true;
-  d3.select('.spiral').transition("overallzoom").duration("400").call(zoom.scaleTo, 9);
+      .attr('transform', e.transform);};
+  if(zoomedin == false){
+    zoomedin = true;
+    d3.select('.spiral').transition("overallzoom").duration("400").call(zoom.scaleTo, 9);
 
-d3.select(this).transition("cirkel_position").duration('400')
+  d3.select(this).transition("cirkel_position").duration('400')
       .attr("cx", w*0.5)
       .attr("cy", h*0.5)
       .attr("r", 29);
 
-      layer3.selectAll('funfacts').data(co2names).enter().append('text') 
-      .text(function(d){return co2names[i-1] +" emmits " + (co2arr[i-1]/1000000) + "M tons CO2"})
-      .attr('x', w*0.5)
-      .attr('y', h*0.5-8)
-      .attr('text-anchor', 'middle')
-      .style('font-size', 2.2)
-      .attr('fill', 'white')
-      .attr("font-family", "'Source Code Pro', monospace")
-      .attr('class', 'funfacts')
-      .transition().duration("400");
+layer3.selectAll('funfacts').data(co2names).enter().append('text') 
+    .text(function(d){return co2names[i-1] +" emmits " + (co2arr[i-1]/1000000) + "M tons CO2"})
+    .attr('x', w*0.5)
+    .attr('y', h*0.5-8)
+    .attr('text-anchor', 'middle')
+    .style('font-size', 2.2)
+    .attr('fill', 'white')
+    .attr("font-family", "'Source Code Pro', monospace")
+    .attr('class', 'funfacts')
+    .transition().duration("400");
 
+layer3.selectAll('.funfacts1').data(funfacts).enter().append('text')
+    .text('FUN FACT!')
+    .attr('x', w*0.5)
+    .attr('y', h*0.5)
+    .attr('text-anchor', 'middle')
+    .style('font-size', 3)
+    .attr('fill', 'white')
+    .attr("font-family", "'Source Code Pro', monospace") 
+    .attr('class', 'funfacts'); 
 
-      layer3.selectAll('.funfacts1').data(funfacts).enter().append('text')
-      .text('FUN FACT!')
-      .attr('x', w*0.5)
-      .attr('y', h*0.5)
-      .attr('text-anchor', 'middle')
-      .style('font-size', 3)
-      .attr('fill', 'white')
-      .attr("font-family", "'Source Code Pro', monospace") 
-      .attr('class', 'funfacts'); 
+layer3.selectAll('.funfacts2').data(funfacts).enter().append('text')
+    .text(function(d){return funfacts[i-1][0]})
+    .attr('x', w*0.5)
+    .attr('y', h*0.5+3)
+    .attr('text-anchor', 'middle')
+    .style('font-size', 2)
+    .attr('fill', 'white')
+    .attr("font-family", "'Source Code Pro', monospace")
+    .attr('class', 'funfacts')
+    .style('opacity', 1);
 
-
-      layer3.selectAll('.funfacts2').data(funfacts).enter().append('text')
-      .text(function(d){return funfacts[i-1][0]})
-      .attr('x', w*0.5)
-      .attr('y', h*0.5+3)
-      .attr('text-anchor', 'middle')
-      .style('font-size', 2)
-      .attr('fill', 'white')
-      .attr("font-family", "'Source Code Pro', monospace")
-      .attr('class', 'funfacts')
-      .style('opacity', 1);
-
-      layer3.selectAll('.funfacts3').data(funfacts).enter().append('text')
-      .text(function(d){return funfacts[i-1][1]})
-      .attr('x', w*0.5)
-      .attr('y', h*0.5+6)
-      .attr('text-anchor', 'middle')
-      .style('font-size', 2)
-      .attr('fill', 'white')
-      .attr("font-family", "'Source Code Pro', monospace")
-      .attr('class', 'funfacts')
-      .style('opacity', 1);
-      }
-
-
+layer3.selectAll('.funfacts3').data(funfacts).enter().append('text')
+    .text(function(d){return funfacts[i-1][1]})
+    .attr('x', w*0.5)
+    .attr('y', h*0.5+6)
+    .attr('text-anchor', 'middle')
+    .style('font-size', 2)
+    .attr('fill', 'white')
+    .attr("font-family", "'Source Code Pro', monospace")
+    .attr('class', 'funfacts')
+    .style('opacity', 1);
+  }
       else if(zoomedin == true){
         d3.select('.spiral').transition().duration(500).call(zoom.scaleTo, 1);
 
 d3.select(this).transition("rewinder").duration('500')
     .attr("cx", function(d){
         return xplacement[i-1]
-    } ) 
+        }) 
     .attr("cy", function(d){
         return yplacement[i-1]
-    } )
+        })
     .attr("r", function(d){
-                return optarr[i-1]});
+        return optarr[i-1]
+        })
   layer3.selectAll('.funfacts').remove()
     zoomedin = false
-      }
+    }
+});
 
-
-    });
 let zoomedin = false
 /*forklaring til cirklernes click og hover effekt:
 
@@ -292,126 +297,132 @@ ved zoom bliver der lavet tre nye tekst elementer i midten og zoomscale bliver s
 2. hvis man allerede er zoomed in er kontrol på 10 og "else if" functionen bliver aktiveret. den sætter alt tilbage som der var før og resetter control tallet
 */
 
-//Navne på cirklerne, deres placement er samme som cirkler men forskudt med et antal pixels på x-aksen, også lidt magiske tal her for ét tal kunne ikke gøre det
-    layer2.selectAll("text")
-        .data(co2names)
-        .enter()
-        .append("text")
-        .attr("x", function(d, i){
-            if(i < 2){ return xplacement[i] + 10 + (i*12)}
-            else if (i < 3){ return xplacement[i] + (i*16)}
-            else if (i < 5){ return xplacement[i] + (i*16)}
-            else if (i < 6){ return xplacement[i] - (i*34)}
-            else if (i < 7){ return xplacement[i] - (i*31)}
-            else if (i < 8){ return xplacement[i] - (i*30)}
+// navne på cirklerne, deres placement er samme som cirkler men forskudt med et antal pixels på x-aksen, også lidt magiske tal her for ét tal kunne ikke gøre det
+layer2.selectAll("text")
+    .data(co2names)
+    .enter()
+    .append("text")
+    .attr("x", function(d, i){
+        if(i < 2){ return xplacement[i] + 10 + (i*12)}
+        else if (i < 3){ return xplacement[i] + (i*16)}
+        else if (i < 5){ return xplacement[i] + (i*16)}
+        else if (i < 6){ return xplacement[i] - (i*34)}
+        else if (i < 7){ return xplacement[i] - (i*31)}
+        else if (i < 8){ return xplacement[i] - (i*30)}
         })
-        .attr("y", function(d, i){
-            return yplacement[i]
+    .attr("y", function(d, i){
+        return yplacement[i]
         })
-        .text(function(d){return d})
-        .attr("fill", "white")
-        .attr("font-family", "'Source Code Pro', monospace")
-        .style("text-decoration", "underline");
-        layer2.append("text")
-        .attr("x", 40)
-        .attr("y", 295)
-        .text("Total")
-        .attr("fill", "white")
-        .attr("font-family", "'Source Code Pro', monospace")
-        .style("text-decoration", "underline")
-
-
-
-        //Og nu tekst som overskrift
-        layer2.append("text")
-        .text("CO2 footprint/year")
-        .attr("x", 503)
-        .attr("y", 80)
-        .style("font-size", "27px")
-        .attr("fill", "rgb(128,128,128)")
-        .style("font-weight", "bold")
-        .attr("font-family", "'Source Code Pro', monospace")
-
-// Her udregner jeg hvad cirklernes radius skal være, da radius og areal er to helt forskellige ting og ikke følges linært
-        let optarr = []
-        for(let i = 0; i < 8; i++){
-            optarr.push(Math.sqrt(rScale(co2arr[i])/pi))
-        }
-        console.log(optarr)
-
-        // her laver jeg en function der trigger når man har scrolled ned på siden. det eneste den gør at at lave radius om til det korrekte.
-        let scrolled = false
+    .text(function(d){
+        return d
+        })
+    .attr("fill", "white")
+    .attr("font-family", "'Source Code Pro', monospace")
+    .style("text-decoration", "underline");
         
-        function scrolldown(){
-          if(scrolled === false){
-            if (document.body.scrollTop > 190 || document.documentElement.scrollTop > 190){
-              scrolled = true;
+layer2.append("text")
+    .attr("x", 40)
+    .attr("y", 295)
+    .text("Total")
+    .attr("fill", "white")
+    .attr("font-family", "'Source Code Pro', monospace")
+    .style("text-decoration", "underline")
+
+// og nu tekst som overskrift
+layer2.append("text")
+    .text("CO2 footprint/year")
+    .attr("x", 503)
+    .attr("y", 80)
+    .style("font-size", "27px")
+    .attr("fill", "rgb(128,128,128)")
+    .style("font-weight", "bold")
+    .attr("font-family", "'Source Code Pro', monospace")
+
+// her udregner jeg hvad cirklernes radius skal være, da radius og areal er to helt forskellige ting og ikke følges linært
+let optarr = []
+
+  for(let i = 0; i < 8; i++){
+      optarr.push(Math.sqrt(rScale(co2arr[i])/pi))
+      }
+        
+      // SKAL DENNE VÆRE HER??
+      console.log(optarr)
+
+// her laver jeg en function der trigger når man har scrolled ned på siden. det eneste den gør at at lave radius om til det korrekte.
+let scrolled = false
+        
+function scrolldown(){
+    if(scrolled === false){
+        if (document.body.scrollTop > 190 || document.documentElement.scrollTop > 190){
+            scrolled = true;
+
             layer2.selectAll("circle")
                 .data([1,2,3,4,5,6,7,8])
                 .transition()
                 .ease(d3.easeElasticOut.amplitude(0.1).period(0.5))
                 .duration(1000)
                 .attr("r", function(d, i){
-                return optarr[i]
-            })
-                .delay(function(i){return (i*120)})
-                
+                    return optarr[i]
+                    })
+                .delay(function(i){
+                    return (i*120)
+                    })
                 ;}
           }
 };
-        window.onscroll = function() {scrolldown()};
+
+window.onscroll = function() {scrolldown()};
 
 
-        //Barchart starter her, skal også bruge nogle basic values så som w h og padding
+//-------------------------------------------------------------------------------------------------------------------
+// her starter Barchart 
+const bw = 700;
+const bh = 400;
+const barPadding = 80;
+const yPadding = 5;
+const padding = 40;
+const paddingLeft = 30;
 
-    
-    const bw = 700;
-    const bh = 400;
-    const barPadding = 80;
-    const yPadding = 5;
-    const padding = 40;
-    const paddingLeft = 30;
-
-    // Query kører op imod API'en som findes i 'main.js'.
-    // HTML åbnes igennem serveren for at virke.
-    d3.json("/foodbarchart", {
+// query kører op imod API'en som findes i 'main.js'.
+// HTML åbnes igennem serveren for at virke.
+  d3.json("/foodbarchart", {
       method: "GET", 
     }).then(function(response) {
       const data = response.data; // Hent data ud af response
       console.log("data", data[0]);
 
-      //Tons supply bliver fundet i data og pushed til et array der er nemt at bruge i d3
-      let supplyArray = [];
-      for (let i = 0; i < data.length; i++) {
-        supplyArray.push(data[i].supply);
-      }
-
-      //Tons waste bliver fundet i data og pushed til et array der er nemt at bruge i d3
-      let wasteArray = [];
+// tons supply bliver fundet i data og pushed til et array der er nemt at bruge i d3
+let supplyArray = [];
     for (let i = 0; i < data.length; i++) {
-      wasteArray.push(data[i].tons_wasted);
-    }
+        supplyArray.push(data[i].supply);
+        }
 
-      //Sektor bliver fundet i data og pushed til et array der er nemt at bruge i d3
-    let textArray = []
-     for (let i = 0; i < data.length; i++) {
-      textArray.push(data[i].sector);
-    }
+// tons waste bliver fundet i data og pushed til et array der er nemt at bruge i d3
+let wasteArray = [];
+    for (let i = 0; i < data.length; i++) {
+        wasteArray.push(data[i].tons_wasted);
+        }
 
-    //Procent waste bliver fundet i data og pushed til et array der er nemt at bruge i d3
-    let procentWasteArray = []
-for (let i = 0; i < data.length; i++) {
-  procentWasteArray.push(data[i].procent_wasted);
-}
+// sektor bliver fundet i data og pushed til et array der er nemt at bruge i d3
+let textArray = []
+    for (let i = 0; i < data.length; i++) {
+        textArray.push(data[i].sector);
+        }
 
-//Al data bliver samlet med rigtige værdier
-     let newArray = []
+// procent waste bliver fundet i data og pushed til et array der er nemt at bruge i d3
+let procentWasteArray = []
+    for (let i = 0; i < data.length; i++) {
+        procentWasteArray.push(data[i].procent_wasted);
+        }
+
+// al data bliver samlet med rigtige værdier
+let newArray = []
     for (let i = 0; i < supplyArray.length; i++) {
-      newArray.push([supplyArray[i],wasteArray[i],textArray[i],procentWasteArray[i]]);
-    }
+        newArray.push([supplyArray[i],wasteArray[i],textArray[i],procentWasteArray[i]]);
+        }
 
-    //Tooltip til visning af procent
-    const tooltip = d3.select("#tiptool")
+// tooltip til visning af procent
+const tooltip = d3.select("#tiptool")
     .append("div")
     .style("position", "absolute")
     .style("visibility", "hidden")
@@ -426,209 +437,214 @@ for (let i = 0; i < data.length; i++) {
     .style("white-space", "pre-line")
     .text("");
 
-// Håndterer mouseover
-    function handleMouseover (d, i) {
-     d3.select(this).style("fill", "rgb(230,90,0)")
-     const procentWaste = i[3]
-     const sectorName = i[2]
-     tooltip.text(sectorName + ":" + "\nProcent wasted - " + procentWaste.toFixed(2) + "%")
-     var x1 = event.clientX;
-     var y1 = event.clientY;
-     tooltip.style("left", (window.pageXOffset + x1 + 10) + "px")
-     tooltip.style("top", (window.pageYOffset + y1 + 10) + "px")
-     return tooltip.style("visibility", "visible")
-    };
+// håndterer mouseover
+function handleMouseover (d, i) {
+    d3.select(this).style("fill", "rgb(230,90,0)")
+    const procentWaste = i[3]
+    const sectorName = i[2]
+    tooltip.text(sectorName + ":" + "\nProcent wasted - " + procentWaste.toFixed(2) + "%")
+    var x1 = event.clientX;
+    var y1 = event.clientY;
+    tooltip.style("left", (window.pageXOffset + x1 + 10) + "px")
+    tooltip.style("top", (window.pageYOffset + y1 + 10) + "px")
+      return tooltip.style("visibility", "visible")
+};
     
-//Håndterer mouseout
-    function handleMouseout(d, i){
-      d3.select(this).style("fill", "rgb(255,125,0)");
+// håndterer mouseout
+function handleMouseout(d, i){
+    d3.select(this).style("fill", "rgb(255,125,0)");
       return tooltip.style("visibility", "hidden")
-    }
+}
 
-  //Her laver vi scales til barcharten
-  //der er magiske tal over alt for at rette det hele til
+// her laver vi scales til barcharten
+// der er magiske tal over alt for at rette det hele til
 
-  //den her bliver kun brugt til at lave x-aksen
-    let xScale = d3.scaleLinear()
+// den her bliver kun brugt til at lave x-aksen
+let xScale = d3.scaleLinear()
     .domain(0, supplyArray.length)
     .range([padding+30,bw - padding]);
 
-//
-    let yScale = d3.scaleLinear()
+let yScale = d3.scaleLinear()
     .domain([0,d3.max(supplyArray)])
     .range([padding ,bh - padding-19]);
 
-    //en ny y scale lavet for at få domain til at blive en million gange mindre, så bliver aksen pæn med et max på 350.(bliver kun brugt én gang til aksen)
-    let nyyScale = d3.scaleLinear()
+// en ny y scale lavet for at få domain til at blive en million gange mindre, så bliver aksen pæn med et max på 350.(bliver kun brugt én gang til aksen)
+let nyyScale = d3.scaleLinear()
     .domain([d3.max(supplyArray)/1000000 + 19, 0])
     .range([padding,bh - padding]);
     
-    let barXScale = d3.scaleLinear()
+let barXScale = d3.scaleLinear()
     .domain([0,supplyArray.length])
     .range([padding + 55, bw - padding + 35]);
 
-        //laver layers
-        let layer1b = svg2.append('g')
-        let layer2b = svg2.append('g')
-        let layer3b = svg2.append('g')
+// laver layers
+let layer1b = svg2.append('g')
+let layer2b = svg2.append('g')
+let layer3b = svg2.append('g')
 
-      // laver grå bars med en height på 0 så ændre vi den i transistion.
-      layer1b.selectAll("rect")
-      .data(newArray)
-      .enter()
-      .append("rect")
-      .attr("x",function(d, i){
+// laver grå bars med en height på 0 så ændre vi den i transistion.
+layer1b.selectAll("rect")
+    .data(newArray)
+    .enter()
+    .append("rect")
+    .attr("x",function(d, i){
         return barXScale(i);
-      })
-      .attr("y", bh-padding)
-      .attr("width", bw / wasteArray.length - barPadding)
-      .attr("height", 0)
-      .attr("fill", "rgb(128,128,128)");
-//transition
-      layer1b.selectAll("rect")
-          .data(newArray)
-          .transition()
-          .ease(d3.easeExpOut)
-          .duration(5000)
-          .attr("y", function(d){
+        })
+    .attr("y", bh-padding)
+    .attr("width", bw / wasteArray.length - barPadding)
+    .attr("height", 0)
+    .attr("fill", "rgb(128,128,128)");
+
+// transition
+layer1b.selectAll("rect")
+    .data(newArray)
+    .transition()
+    .ease(d3.easeExpOut)
+    .duration(5000)
+    .attr("y", function(d){
         return bh - yScale(d[0]);
-      })
-          .attr("height", function(d) { return yScale(d[0])- padding
-      } ) 
+        })
+    .attr("height", function(d){ 
+        return yScale(d[0])- padding
+        }) 
 
-      /* laver orange bars præcis som de grå, men disse har mouseover events, de er skrevet et andet sted som en funtion,
-       men de ændre bare farver og viser tooltip*/
-      layer2b.selectAll("rect")
-      .data(newArray)
-      .enter()
-      .append("rect")
-      .attr("x",function(d, i){
+/* laver orange bars præcis som de grå, men disse har mouseover events, de er skrevet et andet sted som en funtion,
+men de ændre bare farver og viser tooltip*/
+layer2b.selectAll("rect")
+    .data(newArray)
+    .enter()
+    .append("rect")
+    .attr("x",function(d, i){
         return barXScale(i);
-      })
-      .attr("y", bh-padding)
-      .attr("width", bw / wasteArray.length - barPadding)
-      .attr("height", 0)
-      .attr("fill", "rgb(255,125,0)")
-      .on("mouseover", handleMouseover)  
-      .on("mouseout", handleMouseout)
-      //transition
-      layer2b.selectAll("rect")
-          .data(newArray)
-          .transition()
-          .delay(1500)
-          .ease(d3.easeExpOut)
-          .duration(5000)
-          .attr("y", function(d){
-        return bh - yScale(d[1]);
-      })
-          .attr("height", function(d) { return yScale(d[1])- padding
-      } )
+        })
+    .attr("y", bh-padding)
+    .attr("width", bw / wasteArray.length - barPadding)
+    .attr("height", 0)
+    .attr("fill", "rgb(255,125,0)")
+    .on("mouseover", handleMouseover)  
+    .on("mouseout", handleMouseout)
       
-
-      // skriver "ticks" til x aksen. de bliver sat center(x-aksen) men det er center på den venste side af søjlen så vi plusser 30 px
-      layer3b.selectAll("text")
-      .data(newArray)
-      .enter()
-      .append("text")
-      .text(function(d){
+// transition
+layer2b.selectAll("rect")
+    .data(newArray)
+    .transition()
+    .delay(1500)
+    .ease(d3.easeExpOut)
+    .duration(5000)
+    .attr("y", function(d){
+        return bh - yScale(d[1]);
+        })
+    .attr("height", function(d) { return yScale(d[1])- padding
+        })
+      
+// skriver "ticks" til x aksen. de bliver sat center(x-aksen) men det er center på den venste side af søjlen så vi plusser 30 px
+layer3b.selectAll("text")
+    .data(newArray)
+    .enter()
+    .append("text")
+    .text(function(d){
         return d[2];
-      })
-      .attr("x", function(d,i){
+        })
+    .attr("x", function(d,i){
         return barXScale(i) +30
-      })
-      .attr("y", bh - 20)
-      .style("font-family", "monospace")
-      .attr("font-size", "12px")
-      .attr("fill", "white")
-      .attr("text-anchor", "middle");
+        })
+    .attr("y", bh - 20)
+    .style("font-family", "monospace")
+    .attr("font-size", "12px")
+    .attr("fill", "white")
+    .attr("text-anchor", "middle");
 
-      // laver x-aksen og translater den så den er i bunden
-      const xAxis = d3.axisBottom().scale(xScale);
-      svg2.append("g")
-         .attr("class", "axis")
-         .attr("transform", "translate(0, " + (bh - padding) + ")")
-         .call(xAxis)
-         .append("text")
-         .attr("text-anchor", "middle")
-         .attr("fill", "white")
-         .attr("transform", `translate(${bw}, 8)`)
-         .text("Sector")
-         .style("font-family", "monospace");
+// laver x-aksen og translater den så den er i bunden
+const xAxis = d3.axisBottom().scale(xScale);
+      
+svg2.append("g")
+    .attr("class", "axis")
+    .attr("transform", "translate(0, " + (bh - padding) + ")")
+    .call(xAxis)
+    .append("text")
+    .attr("text-anchor", "middle")
+    .attr("fill", "white")
+    .attr("transform", `translate(${bw}, 8)`)
+    .text("Sector")
+    .style("font-family", "monospace");
          
-      // laver y aksen og hardcoder ticks så det ser pænt ud. det var derfor vi plusser nyyscale med 19. så ramte vi et max på 350
-      yAxis = d3.axisLeft().scale(nyyScale).tickValues([0,50, 100, 150, 200, 250, 300, 350]);
-      svg2.append("g")
-         .attr("class", "axis")
-         .attr("transform", "translate(" + 70 + ",0)")
-         .call(yAxis)
-         .append("text")
-         //bliver nødt til at hardcode koordinaterne så det ser pænt ud
-         .attr("x", 115)
-         .attr("y", 0)
-         .attr("fill", "white")
-         .attr("transform", "translate(-70, 28)")
-         .text("Million Tons")
-         .style("font-family", "monospace");
+// laver y aksen og hardcoder ticks så det ser pænt ud. det var derfor vi plusser nyyscale med 19. så ramte vi et max på 350
+yAxis = d3.axisLeft().scale(nyyScale).tickValues([0,50, 100, 150, 200, 250, 300, 350]);
+      
+svg2.append("g")
+    .attr("class", "axis")
+    .attr("transform", "translate(" + 70 + ",0)")
+    .call(yAxis)
+    .append("text")
+    //bliver nødt til at hardcode koordinaterne så det ser pænt ud
+    .attr("x", 115)
+    .attr("y", 0)
+    .attr("fill", "white")
+    .attr("transform", "translate(-70, 28)")
+    .text("Million Tons")
+    .style("font-family", "monospace");
 
-  // her starter Treemap
 
-  //laver layers
+//-------------------------------------------------------------------------------------------------------------------    
+// her starter Treemap
+
+//laver layers
 let layer1t = svg3.append('g')
 let layer2t = svg3.append('g') 
 
 // laver toolip og appender den på div, men den er usynlig(hidden) indtil vi ændre det med mouseover  
 const tooltip2 = d3.select("#tiptool")
-.append("div")
-.style("position", "absolute")
-.style("visibility", "hidden")
-.style("color", "white")
-.style("background-color", "rgb(46, 46, 46)")
-.style("padding", '5px')
-.style("border", "solid")
-.style("border-width", '1px')
-.style("border-color", "white")
-.style("font-family", "monospace")
-.style("font-size", "12px")
-.style("white-space", "pre-line")
-.text("");
+    .append("div")
+    .style("position", "absolute")
+    .style("visibility", "hidden")
+    .style("color", "white")
+    .style("background-color", "rgb(46, 46, 46)")
+    .style("padding", '5px')
+    .style("border", "solid")
+    .style("border-width", '1px')
+    .style("border-color", "white")
+    .style("font-family", "monospace")
+    .style("font-size", "12px")
+    .style("white-space", "pre-line")
+    .text("");
 
-// laver en handle functioner der bestemmer hvad der skal ske hvis man hover på treemap
-
-//her er hver der sker når man holder musen over, vi ændre farven og viser tooltip + indsætter tekst på tooltipped alt efter hvilet rect man hover
+// håndtere mousemove på rects
 function handleMousemoveRect (event, d){
-  const name = d.data.name;
-  const tons = d.data.tons;
-  const procent = d.data.procent;
-  const text = name + ":" + "\n" + tons + " - " + procent + "%"
-  d3.select(this).style("fill", "rgb(255,105,30)")
-  tooltip2.text(text)
-  var x = event.clientX;
-  var y = event.clientY;
-  tooltip2.style("left", (window.pageXOffset + x + 10) + "px")
-  tooltip2.style("top", (window.pageYOffset + y + 10) + "px")
-  return tooltip2.style("visibility", "visible")
+    const name = d.data.name;
+    const tons = d.data.tons;
+    const procent = d.data.procent;
+    const text = name + ":" + "\n" + tons + " - " + procent + "%"
+    d3.select(this).style("fill", "rgb(255,105,30)")
+    tooltip2.text(text)
+    var x = event.clientX;
+    var y = event.clientY;
+    tooltip2.style("left", (window.pageXOffset + x + 10) + "px")
+    tooltip2.style("top", (window.pageYOffset + y + 10) + "px")
+      return tooltip2.style("visibility", "visible")
 }
 
-// dette sker hvis man fjerner musen igen, her bliver farven " normal igen" og tooltipped bliver hidden
+// håndtere mouseout på rects
 function handleMouseoutRect(){
-  d3.select(this).style("fill", "rgb(255,125,0)")
-  return tooltip2.style("visibility", "hidden")
-}
-//det samme skal ske hvis man skulle hover over teksen i treemappet så vi lave samme kode igen bare uden farven.
-function handleMousemoveText (event, d){
-  const name = d.data.name;
-  const tons = d.data.tons;
-  const procent = d.data.procent;
-  const text = name + ":" + "\n" + tons + " - " + procent + "%"
-  tooltip2.text(text)
-  var x = event.clientX;
-  var y = event.clientY;
-  tooltip2.style("left", (window.pageXOffset + x + 10) + "px")
-  tooltip2.style("top", (window.pageYOffset + y + 10) + "px")
-  d3.select(this).style("cursor", "default")
-  return tooltip2.style("visibility", "visible")
+    d3.select(this).style("fill", "rgb(255,125,0)")
+      return tooltip2.style("visibility", "hidden")
 }
 
+// håndtere mousemove på text
+function handleMousemoveText (event, d){
+    const name = d.data.name;
+    const tons = d.data.tons;
+    const procent = d.data.procent;
+    const text = name + ":" + "\n" + tons + " - " + procent + "%"
+    tooltip2.text(text)
+    var x = event.clientX;
+    var y = event.clientY;
+    tooltip2.style("left", (window.pageXOffset + x + 10) + "px")
+    tooltip2.style("top", (window.pageYOffset + y + 10) + "px")
+    d3.select(this).style("cursor", "default")
+      return tooltip2.style("visibility", "visible")
+}
+
+// håndtere mouseout på text
 function handleMouseoutText(){
   return tooltip2.style("visibility", "hidden")
 }
@@ -636,36 +652,33 @@ function handleMouseoutText(){
 // loader vores json-fil ind
 d3.json("causes.json").then(function(data) {
 
-  // her får vi en procent fra d3 af hvor stor hver rect skal være i svg feltet(treemap størrelser laves af d3)
-  const root = d3.hierarchy(data).sum(function(d){ 
+// her får vi en procent fra d3 af hvor stor hver rect skal være i svg feltet(treemap størrelser laves af d3)
+const root = d3.hierarchy(data).sum(function(d){ 
     return d.procent
-  }) 
+    }) 
 
-  // D3 laver treemap og vi giver den padding info samt størrelse
-  d3.treemap()
+// D3 laver treemap og vi giver den padding info samt størrelse
+d3.treemap()
     .size([width, height])
     .padding(5)
     (root)
 
-  /* her laver appender vi rects med "root" som data, d3 finder selv ud af hvordan der skal se ud.
-   Det er her vi bruger vores tidligere definerede handle functioners */
-  
-  layer1t
-    .selectAll("rect")
+/* her laver appender vi rects med "root" som data, d3 finder selv ud af hvordan der skal se ud.
+Det er her vi bruger vores tidligere definerede handle functioners */
+layer1t.selectAll("rect")
     .data(root.leaves())
     .enter()
     .append("rect")
-      .attr('x', function (d) { return d.x0; })
-      .attr('y', function (d) { return d.y0; })
-      .attr('width', function (d) { return d.x1 - d.x0; })
-      .attr('height', function (d) { return d.y1 - d.y0; })
-      .style("fill", "rgb(255,125,0)")
-      .on("mousemove", handleMousemoveRect)
-      .on("mouseout", handleMouseoutRect)
+    .attr('x', function (d) { return d.x0; })
+    .attr('y', function (d) { return d.y0; })
+    .attr('width', function (d) { return d.x1 - d.x0; })
+    .attr('height', function (d) { return d.y1 - d.y0; })
+    .style("fill", "rgb(255,125,0)")
+    .on("mousemove", handleMousemoveRect)
+    .on("mouseout", handleMouseoutRect)
 
-  // tilføjer tekst til hver boks
-  layer2t
-    .selectAll("text")
+// tilføjer tekst til hver boks
+layer2t.selectAll("text")
     .data(root.leaves())
     .enter()
     .append("text")
@@ -679,7 +692,7 @@ d3.json("causes.json").then(function(data) {
     .style("font-family", "monospace") 
     .on("mousemove", handleMousemoveText)
     .on("mouseout", handleMouseoutText)
-})
+  })
 })
             
     </script>
