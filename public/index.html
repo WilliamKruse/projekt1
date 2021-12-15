@@ -53,75 +53,24 @@
 
 <script>
 
-// højde og bredde på mit svg element(til spiral)
-const sWidth = 800;
-const sHeight = 622.22;
+//-------------------------------------------------------------------------------------------------------------------  
+// BARCHART
 
-// her vælger jeg hvor cirklerne skal placeres. Rad er radius på den cirkel cirklerne bliver "tegnet på ydersiden af".
-const rad = sHeight*0.33;
-const pi = Math.PI;
-
-// her laver jeg jeg functioner der kan regne x og y kordinaterne hvis jeg giver dem den grad.(bemærk js bruger radianer og ikek grader)
-function convertXPlacement(degree){return sWidth/2 + rad * Math.cos(degree*0.0174532925)}
-function convertYPlacement(degree){return sHeight/2 + rad * Math.sin(degree*0.0174532925)}
-
-// her laver jeg så et array men manuelt indsatte grader. Dem skal jeg bruge når jeg kalder .data i d3
-const xplacement = [convertXPlacement(300), convertXPlacement(320), convertXPlacement(350), convertXPlacement(25), convertXPlacement(72), convertXPlacement(130), convertXPlacement(190), convertXPlacement(260)]
-const yplacement = [convertYPlacement(300), convertYPlacement(320), convertYPlacement(350), convertYPlacement(25), convertYPlacement(72), convertYPlacement(130), convertYPlacement(190), convertYPlacement(260)] 
-
-// her har jeg lavet tre arrays med data jeg skal bruge til cirklernes størrelse og nametags. Funfacts er også et array jeg kalder når man zoomer ind.
-let co2arr = [1100000, 5240000, 15000000, 35500000, 60640000, 104000000, 126158000, 168700000]
-let co2names = ["LEGO", "Coca-Cola", "Samsung", "Maersk", "Amazon","US ARMY x2", "Scandinavia", "US Foodwaste"]
-let funfacts = [
-  ["Multiple pieces of LEGO is still called LEGO", "NOT LEGOs!"],
-  ["Coca-Cola was the first soda IN SPACE!", "*angry Pepsi noises*"],
-  ["Samsung is not only making phones and TV's.", "They are making military grade weapons aswell!"],
-  ["Maersk operates in 130 countries.", "And employs more than 89.000 people worldwide!"],
-  ["Amazon has been criticized a lot recently.", "Stock price still doubled since 2019?!"],
-  ["Firing rockets emmit CO2.", "Plants do not..."],
-  ["In 2008, Norway knighted a penguin.", "His name was Nils Olav!"],
-  ["USDA set out a goal in 2015:", "Reduce food waste by 50% by 2030"]]
-
-// her er an scale der udelukkende bruges til co2arr. domain går op til co2 footprint max, altså den største cirkel(us foodwaste) og range er maksimal areal i pixels.
-const rScale = d3.scaleLinear()
-    .domain([0, 168700000])
-    .range([0, 24000]);
-
-// her laver jeg svg feltet der skal bruges til spiralen og appender den på min div med classen "spiral"
-const svg = d3.select(".spiral")
-    .append("svg")
-    .attr("width", sWidth)
-    .attr("height", sHeight)
-
-//laver layers til spiralen, så render rækkefælgen er nem at kontrollere
-let layer1 = svg.append('g')
-let layer2 = svg.append('g')
-let layer3 = svg.append('g')
-
-//det her layer er kun for at rette svg spiralens størrelse og position. Der brude være en nemmere løsning men det her virkede
-let invis = layer1.append("svg").attr("opacity",100).attr("x", 138).attr("y", 94).attr("width", sWidth*0.61).attr("height", sHeight*0.71).attr("id", "boks");
-
-//her laver appender jeg min spiral fil jeg lavede i adobe illustrator
-let spiral = d3.xml("spiral.svg")
- .then(data => {
-    d3.select("#boks").node().append(data.documentElement)
-  });
-
-// Height og width kun til svg feltet
+// height og width til barchart
 const bWidth = 750
 const bHeight = 400
 
-//nyt svg felt til barcharten(her er noget galt, width og height er hardcoded, burde hedder bh og bw, men værdierne stemmer ikke overens)
+// svg felt til barchart 
 const svg2 = d3.select(".barchart")
     .append("svg")
     .attr("width", bWidth)
     .attr("height", bHeight)
 
-// laver layers til svg2, så det er nemmere at vælge hvad der skal renderes først. bliver kun brugt til den lille boks der fortæller hvad de forskellige farver bars betyder
+// layers til barchart
 var box1 = svg2.append('g')
 var box2 = svg2.append('g')
 
-// grå firkant og tekst
+// lille grå firkant og tekst
     box1.append("rect")
         .attr('x', 650)
         .attr('y', 38)
@@ -138,7 +87,7 @@ var box2 = svg2.append('g')
         .style("font-family", "monospace")
         .attr("font-size", "11px")
  
-// Orange firkant og tekst.
+// lille orange firkant og tekst.
     box2.append('rect')
         .attr('x', 650)
         .attr('y', 68)
@@ -154,21 +103,270 @@ var box2 = svg2.append('g')
         .style("fill", "white")
         .style("font-family", "monospace")
         .attr("font-size", "11px")
-       
-// height og width sat til treemap
-const tWidth = 740;
-const tHeight = 700;
+        
+const bw = 700;
+const bh = 400;
+const barPadding = 80;
+const yPadding = 5;
+const padding = 40;
+const paddingLeft = 30;
 
-// laver svg felt til treemap
-const svg3 = d3.select(".treemap")
-    .append("svg")
-    .attr("width", tWidth)
-    .attr("height", tHeight)    
+// query kører op imod API'en som findes i 'main.js'.
+// HTML åbnes igennem serveren for at virke.
+  d3.json("/foodbarchart", {
+      method: "GET", 
+    }).then(function(response) {
+      const data = response.data; // Hent data ud af response
+      console.log("data", data[0]);
 
+// tons supply bliver indsat i array
+let supplyArray = [];
+    for (let i = 0; i < data.length; i++) {
+        supplyArray.push(data[i].supply);
+        }
+
+// tons waste bliver indsat i array
+let wasteArray = [];
+    for (let i = 0; i < data.length; i++) {
+        wasteArray.push(data[i].tons_wasted);
+        }
+
+// sektor bliver indsat i array
+let textArray = []
+    for (let i = 0; i < data.length; i++) {
+        textArray.push(data[i].sector);
+        }
+
+// procent waste bliver indsat i array
+let procentWasteArray = []
+    for (let i = 0; i < data.length; i++) {
+        procentWasteArray.push(data[i].procent_wasted);
+        }
+
+// al data bliver indsat i array
+let newArray = []
+    for (let i = 0; i < supplyArray.length; i++) {
+        newArray.push([supplyArray[i],wasteArray[i],textArray[i],procentWasteArray[i]]);
+        }
+
+// tooltip til visning af procent
+const tooltip = d3.select("#tiptool")
+    .append("div")
+    .style("position", "absolute")
+    .style("visibility", "hidden")
+    .style("color", "white")
+    .style("background-color", "rgb(46, 46, 46)")
+    .style("padding", '5px')
+    .style("border", "solid")
+    .style("border-width", '1px')
+    .style("border-color", "white")
+    .style("font-family", "monospace")
+    .style("font-size", "12px")
+    .style("white-space", "pre-line")
+    .text("");
+
+// håndterer mouseover
+function handleMouseover (d, i) {
+    d3.select(this).style("fill", "rgb(230,90,0)")
+    const procentWaste = i[3]
+    const sectorName = i[2]
+    tooltip.text(sectorName + ":" + "\nProcent wasted - " + procentWaste.toFixed(2) + "%")
+    var x1 = event.clientX;
+    var y1 = event.clientY;
+    tooltip.style("left", (window.pageXOffset + x1 + 10) + "px")
+    tooltip.style("top", (window.pageYOffset + y1 + 10) + "px")
+      return tooltip.style("visibility", "visible")
+};
     
-//-------------------------------------------------------------------------------------------------------------------    
-// laver cirkler til spiralen. farven skifter jo flere cirkler der bliver lavet.
-// mouseover og click events er lidt komplicerede, men forklare det nedenunder.
+// håndterer mouseout
+function handleMouseout(d, i){
+    d3.select(this).style("fill", "rgb(255,125,0)");
+      return tooltip.style("visibility", "hidden")
+}
+
+// scales til barcharten
+
+// laver x-scale 
+let xScale = d3.scaleLinear()
+    .domain(0, supplyArray.length)
+    .range([padding+30,bw - padding]);
+
+let yScale = d3.scaleLinear()
+    .domain([0,d3.max(supplyArray)])
+    .range([padding ,bh - padding-19]);
+
+// laver y-scale
+let nyyScale = d3.scaleLinear()
+    .domain([d3.max(supplyArray)/1000000 + 19, 0])
+    .range([padding,bh - padding]);
+    
+let barXScale = d3.scaleLinear()
+    .domain([0,supplyArray.length])
+    .range([padding + 55, bw - padding + 35]);
+
+// laver layers til barchart
+let layer1b = svg2.append('g')
+let layer2b = svg2.append('g')
+let layer3b = svg2.append('g')
+
+// laver grå bars 
+layer1b.selectAll("rect")
+    .data(newArray)
+    .enter()
+    .append("rect")
+    .attr("x",function(d, i){
+        return barXScale(i);
+        })
+    .attr("y", bh-padding)
+    .attr("width", bw / wasteArray.length - barPadding)
+    .attr("height", 0)
+    .attr("fill", "rgb(128,128,128)");
+
+// transition
+layer1b.selectAll("rect")
+    .data(newArray)
+    .transition()
+    .ease(d3.easeExpOut)
+    .duration(5000)
+    .attr("y", function(d){
+        return bh - yScale(d[0]);
+        })
+    .attr("height", function(d){ 
+        return yScale(d[0])- padding
+        }) 
+
+// laver orange bars 
+layer2b.selectAll("rect")
+    .data(newArray)
+    .enter()
+    .append("rect")
+    .attr("x",function(d, i){
+        return barXScale(i);
+        })
+    .attr("y", bh-padding)
+    .attr("width", bw / wasteArray.length - barPadding)
+    .attr("height", 0)
+    .attr("fill", "rgb(255,125,0)")
+    .on("mouseover", handleMouseover)  
+    .on("mouseout", handleMouseout)
+      
+// transition
+layer2b.selectAll("rect")
+    .data(newArray)
+    .transition()
+    .delay(1500)
+    .ease(d3.easeExpOut)
+    .duration(5000)
+    .attr("y", function(d){
+        return bh - yScale(d[1]);
+        })
+    .attr("height", function(d) { return yScale(d[1])- padding
+        })
+      
+// "ticks" til x-aksen
+layer3b.selectAll("text")
+    .data(newArray)
+    .enter()
+    .append("text")
+    .text(function(d){
+        return d[2];
+        })
+    .attr("x", function(d,i){
+        return barXScale(i) +30
+        })
+    .attr("y", bh - 20)
+    .style("font-family", "monospace")
+    .attr("font-size", "12px")
+    .attr("fill", "white")
+    .attr("text-anchor", "middle");
+
+// laver x-aksen og translater den så den er i bunden
+const xAxis = d3.axisBottom().scale(xScale);
+      
+svg2.append("g")
+    .attr("class", "axis")
+    .attr("transform", "translate(0, " + (bh - padding) + ")")
+    .call(xAxis)
+    .append("text")
+    .attr("text-anchor", "middle")
+    .attr("fill", "white")
+    .attr("transform", `translate(${bw}, 8)`)
+    .text("Sector")
+    .style("font-family", "monospace");
+         
+// laver y-aksen samt "ticks"
+const yAxis = d3.axisLeft().scale(nyyScale).tickValues([0,50, 100, 150, 200, 250, 300, 350]);
+      
+svg2.append("g")
+    .attr("class", "axis")
+    .attr("transform", "translate(" + 70 + ",0)")
+    .call(yAxis)
+    .append("text")
+    .attr("x", 115)
+    .attr("y", 0)
+    .attr("fill", "white")
+    .attr("transform", "translate(-70, 28)")
+    .text("Million Tons")
+    .style("font-family", "monospace"); 
+    
+//-------------------------------------------------------------------------------------------------------------------      
+// SPIRAL    
+
+// height og width til spiral
+const sWidth = 800;
+const sHeight = 622.22;
+
+// radius på spiral
+const rad = sHeight*0.33; 
+const pi = Math.PI;
+
+// functions der kan regne x og y kordinaterne (bruger radianer og ikke grader)
+function convertXPlacement(degree){return sWidth/2 + rad * Math.cos(degree*0.0174532925)}
+function convertYPlacement(degree){return sHeight/2 + rad * Math.sin(degree*0.0174532925)}
+
+// arrays med grader. Bruges ved .data i d3
+const xplacement = [convertXPlacement(300), convertXPlacement(320), convertXPlacement(350), convertXPlacement(25), convertXPlacement(72), convertXPlacement(130), convertXPlacement(190), convertXPlacement(260)]
+const yplacement = [convertYPlacement(300), convertYPlacement(320), convertYPlacement(350), convertYPlacement(25), convertYPlacement(72), convertYPlacement(130), convertYPlacement(190), convertYPlacement(260)] 
+
+// arrays med data, nametags og fun facts 
+let co2arr = [1100000, 5240000, 15000000, 35500000, 60640000, 104000000, 126158000, 168700000]
+let co2names = ["LEGO", "Coca-Cola", "Samsung", "Maersk", "Amazon","US ARMY x2", "Scandinavia", "US Foodwaste"]
+let funfacts = [
+  ["Multiple pieces of LEGO is still called LEGO", "NOT LEGOs!"],
+  ["Coca-Cola was the first soda IN SPACE!", "*angry Pepsi noises*"],
+  ["Samsung is not only making phones and TV's.", "They are making military grade weapons aswell!"],
+  ["Maersk operates in 130 countries.", "And employs more than 89.000 people worldwide!"],
+  ["Amazon has been criticized a lot recently.", "Stock price still doubled since 2019?!"],
+  ["Firing rockets emmit CO2.", "Plants do not..."],
+  ["In 2008, Norway knighted a penguin.", "His name was Nils Olav!"],
+  ["USDA set out a goal in 2015:", "Reduce food waste by 50% by 2030"]]
+
+// scale der udelukkende bruges til co2arr .domain går op til co2 footprint max
+const rScale = d3.scaleLinear()
+    .domain([0, 168700000])
+    .range([0, 24000]);
+
+// svg felt til spiral 
+const svg = d3.select(".spiral")
+    .append("svg")
+    .attr("width", sWidth)
+    .attr("height", sHeight)
+
+// layers til spiralen
+let layer1 = svg.append('g')
+let layer2 = svg.append('g')
+let layer3 = svg.append('g')
+
+// retter spiralens størrelse og position 
+let invis = layer1.append("svg").attr("opacity",100).attr("x", 138).attr("y", 94).attr("width", sWidth*0.61).attr("height", sHeight*0.71).attr("id", "boks");
+
+// appender spiral.svg (lavet i adobe illustrator)
+let spiral = d3.xml("spiral.svg")
+ .then(data => {
+    d3.select("#boks").node().append(data.documentElement)
+  });  
+
+// laver cirkler til spiralen
 layer2.selectAll("circle")
     .data(co2arr)
     .enter()
@@ -290,6 +488,7 @@ d3.select(this).transition("rewinder").duration('500')
 });
 
 let zoomedin = false
+
 /*forklaring til cirklernes click og hover effekt:
 
 hover er nem nok: hvis man holder over cirklen bliver rgb skruet ned med 10 på alle tre farver.
@@ -301,7 +500,7 @@ ved zoom bliver der lavet tre nye tekst elementer i midten og zoomscale bliver s
 2. hvis man allerede er zoomed in er kontrol på 10 og "else if" functionen bliver aktiveret. den sætter alt tilbage som der var før og resetter control tallet
 */
 
-// navne på cirklerne, deres placement er samme som cirkler men forskudt med et antal pixels på x-aksen, også lidt magiske tal her for ét tal kunne ikke gøre det
+// navne på cirklerne
 layer2.selectAll("text")
     .data(co2names)
     .enter()
@@ -332,7 +531,7 @@ layer2.append("text")
     .attr("font-family", "'Source Code Pro', monospace")
     .style("text-decoration", "underline")
 
-// og nu tekst som overskrift
+// tekst som overskrift
 layer2.append("text")
     .text("CO2 footprint/year")
     .attr("x", 503)
@@ -342,15 +541,13 @@ layer2.append("text")
     .style("font-weight", "bold")
     .attr("font-family", "'Source Code Pro', monospace")
 
-// her udregner jeg hvad cirklernes radius skal være, da radius og areal er to helt forskellige ting og ikke følges linært
+// udregner cirklernes radius
 let optarr = []
-
   for(let i = 0; i < 8; i++){
       optarr.push(Math.sqrt(rScale(co2arr[i])/pi))
       }
-        
 
-// her laver jeg en function der trigger når man har scrolled ned på siden. det eneste den gør at at lave radius om til det korrekte.
+// function der trigger når man har scrolled ned på siden
 let scrolled = false
         
 function scrolldown(){
@@ -375,226 +572,24 @@ function scrolldown(){
 
 window.onscroll = function() {scrolldown()};
 
+//-------------------------------------------------------------------------------------------------------------------    
+// TREEMAP
 
-//-------------------------------------------------------------------------------------------------------------------
-// her starter Barchart 
-const bw = 700;
-const bh = 400;
-const barPadding = 80;
-const yPadding = 5;
-const padding = 40;
-const paddingLeft = 30;
+// height og width til treemap
+const tWidth = 740;
+const tHeight = 700;
 
-// query kører op imod API'en som findes i 'main.js'.
-// HTML åbnes igennem serveren for at virke.
-  d3.json("/foodbarchart", {
-      method: "GET", 
-    }).then(function(response) {
-      const data = response.data; // Hent data ud af response
-      console.log("data", data[0]);
-
-// tons supply bliver fundet i data og pushed til et array der er nemt at bruge i d3
-let supplyArray = [];
-    for (let i = 0; i < data.length; i++) {
-        supplyArray.push(data[i].supply);
-        }
-
-// tons waste bliver fundet i data og pushed til et array der er nemt at bruge i d3
-let wasteArray = [];
-    for (let i = 0; i < data.length; i++) {
-        wasteArray.push(data[i].tons_wasted);
-        }
-
-// sektor bliver fundet i data og pushed til et array der er nemt at bruge i d3
-let textArray = []
-    for (let i = 0; i < data.length; i++) {
-        textArray.push(data[i].sector);
-        }
-
-// procent waste bliver fundet i data og pushed til et array der er nemt at bruge i d3
-let procentWasteArray = []
-    for (let i = 0; i < data.length; i++) {
-        procentWasteArray.push(data[i].procent_wasted);
-        }
-
-// al data bliver samlet med rigtige værdier
-let newArray = []
-    for (let i = 0; i < supplyArray.length; i++) {
-        newArray.push([supplyArray[i],wasteArray[i],textArray[i],procentWasteArray[i]]);
-        }
-
-// tooltip til visning af procent
-const tooltip = d3.select("#tiptool")
-    .append("div")
-    .style("position", "absolute")
-    .style("visibility", "hidden")
-    .style("color", "white")
-    .style("background-color", "rgb(46, 46, 46)")
-    .style("padding", '5px')
-    .style("border", "solid")
-    .style("border-width", '1px')
-    .style("border-color", "white")
-    .style("font-family", "monospace")
-    .style("font-size", "12px")
-    .style("white-space", "pre-line")
-    .text("");
-
-// håndterer mouseover
-function handleMouseover (d, i) {
-    d3.select(this).style("fill", "rgb(230,90,0)")
-    const procentWaste = i[3]
-    const sectorName = i[2]
-    tooltip.text(sectorName + ":" + "\nProcent wasted - " + procentWaste.toFixed(2) + "%")
-    var x1 = event.clientX;
-    var y1 = event.clientY;
-    tooltip.style("left", (window.pageXOffset + x1 + 10) + "px")
-    tooltip.style("top", (window.pageYOffset + y1 + 10) + "px")
-      return tooltip.style("visibility", "visible")
-};
-    
-// håndterer mouseout
-function handleMouseout(d, i){
-    d3.select(this).style("fill", "rgb(255,125,0)");
-      return tooltip.style("visibility", "hidden")
-}
-
-// her laver vi scales til barcharten
-// der er magiske tal over alt for at rette det hele til
-
-// den her bliver kun brugt til at lave x-aksen
-let xScale = d3.scaleLinear()
-    .domain(0, supplyArray.length)
-    .range([padding+30,bw - padding]);
-
-let yScale = d3.scaleLinear()
-    .domain([0,d3.max(supplyArray)])
-    .range([padding ,bh - padding-19]);
-
-// en ny y scale lavet for at få domain til at blive en million gange mindre, så bliver aksen pæn med et max på 350.(bliver kun brugt én gang til aksen)
-let nyyScale = d3.scaleLinear()
-    .domain([d3.max(supplyArray)/1000000 + 19, 0])
-    .range([padding,bh - padding]);
-    
-let barXScale = d3.scaleLinear()
-    .domain([0,supplyArray.length])
-    .range([padding + 55, bw - padding + 35]);
+// svg felt til treemap
+const svg3 = d3.select(".treemap")
+    .append("svg")
+    .attr("width", tWidth)
+    .attr("height", tHeight)  
 
 // laver layers
-let layer1b = svg2.append('g')
-let layer2b = svg2.append('g')
-let layer3b = svg2.append('g')
-
-// laver grå bars med en height på 0 så ændre vi den i transistion.
-layer1b.selectAll("rect")
-    .data(newArray)
-    .enter()
-    .append("rect")
-    .attr("x",function(d, i){
-        return barXScale(i);
-        })
-    .attr("y", bh-padding)
-    .attr("width", bw / wasteArray.length - barPadding)
-    .attr("height", 0)
-    .attr("fill", "rgb(128,128,128)");
-
-// transition
-layer1b.selectAll("rect")
-    .data(newArray)
-    .transition()
-    .ease(d3.easeExpOut)
-    .duration(5000)
-    .attr("y", function(d){
-        return bh - yScale(d[0]);
-        })
-    .attr("height", function(d){ 
-        return yScale(d[0])- padding
-        }) 
-
-/* laver orange bars præcis som de grå, men disse har mouseover events, de er skrevet et andet sted som en funtion,
-men de ændre bare farver og viser tooltip*/
-layer2b.selectAll("rect")
-    .data(newArray)
-    .enter()
-    .append("rect")
-    .attr("x",function(d, i){
-        return barXScale(i);
-        })
-    .attr("y", bh-padding)
-    .attr("width", bw / wasteArray.length - barPadding)
-    .attr("height", 0)
-    .attr("fill", "rgb(255,125,0)")
-    .on("mouseover", handleMouseover)  
-    .on("mouseout", handleMouseout)
-      
-// transition
-layer2b.selectAll("rect")
-    .data(newArray)
-    .transition()
-    .delay(1500)
-    .ease(d3.easeExpOut)
-    .duration(5000)
-    .attr("y", function(d){
-        return bh - yScale(d[1]);
-        })
-    .attr("height", function(d) { return yScale(d[1])- padding
-        })
-      
-// skriver "ticks" til x aksen. de bliver sat center(x-aksen) men det er center på den venste side af søjlen så vi plusser 30 px
-layer3b.selectAll("text")
-    .data(newArray)
-    .enter()
-    .append("text")
-    .text(function(d){
-        return d[2];
-        })
-    .attr("x", function(d,i){
-        return barXScale(i) +30
-        })
-    .attr("y", bh - 20)
-    .style("font-family", "monospace")
-    .attr("font-size", "12px")
-    .attr("fill", "white")
-    .attr("text-anchor", "middle");
-
-// laver x-aksen og translater den så den er i bunden
-const xAxis = d3.axisBottom().scale(xScale);
-      
-svg2.append("g")
-    .attr("class", "axis")
-    .attr("transform", "translate(0, " + (bh - padding) + ")")
-    .call(xAxis)
-    .append("text")
-    .attr("text-anchor", "middle")
-    .attr("fill", "white")
-    .attr("transform", `translate(${bw}, 8)`)
-    .text("Sector")
-    .style("font-family", "monospace");
-         
-// laver y aksen og hardcoder ticks så det ser pænt ud. det var derfor vi plusser nyyscale med 19. så ramte vi et max på 350
-const yAxis = d3.axisLeft().scale(nyyScale).tickValues([0,50, 100, 150, 200, 250, 300, 350]);
-      
-svg2.append("g")
-    .attr("class", "axis")
-    .attr("transform", "translate(" + 70 + ",0)")
-    .call(yAxis)
-    .append("text")
-    //bliver nødt til at hardcode koordinaterne så det ser pænt ud
-    .attr("x", 115)
-    .attr("y", 0)
-    .attr("fill", "white")
-    .attr("transform", "translate(-70, 28)")
-    .text("Million Tons")
-    .style("font-family", "monospace");
-
-
-//-------------------------------------------------------------------------------------------------------------------    
-// her starter Treemap
-
-//laver layers
 let layer1t = svg3.append('g')
 let layer2t = svg3.append('g') 
 
-// laver toolip og appender den på div, men den er usynlig(hidden) indtil vi ændre det med mouseover  
+// laver toolip til visning af data
 const tooltip2 = d3.select("#tiptool")
     .append("div")
     .style("position", "absolute")
@@ -651,22 +646,21 @@ function handleMouseoutText(){
   return tooltip2.style("visibility", "hidden")
 }
 
-// loader vores json-fil ind
+// loader json-fil 
 d3.json("causes.json").then(function(data) {
 
-// her får vi en procent fra d3 af hvor stor hver rect skal være i svg feltet(treemap størrelser laves af d3)
+// størrelsen på rects udfra procent
 const root = d3.hierarchy(data).sum(function(d){ 
     return d.procent
     }) 
 
-// D3 laver treemap og vi giver den padding info samt størrelse
+// d3 laver treemap
 d3.treemap()
     .size([tWidth, tHeight])
     .padding(5)
     (root)
 
-/* her laver appender vi rects med "root" som data, d3 finder selv ud af hvordan der skal se ud.
-Det er her vi bruger vores tidligere definerede handle functioners */
+// laver rects (d3 placerer og justere selv disse)     
 layer1t.selectAll("rect")
     .data(root.leaves())
     .enter()
