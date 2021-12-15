@@ -17,7 +17,8 @@
 <div class="intro">
     <h1>US. FOOD WASTE </h1>
     <h2>Explore the data!</h2>
-    <h3>The US. is wasting <span style="color: rgb(255,125,0)"> A LOT</span> of their food-supply - It is a problem throughout most of the supplychain <br> Join us, while we dive deeper into the numbers</h3>
+    <h3>The US. is wasting <span style="color: rgb(255,125,0)"> A LOT</span>
+       of their food-supply - It is a problem throughout most of the supplychain <br> Join us, while we dive deeper into the numbers</h3>
 </div>
 
 <div id="grid">
@@ -325,8 +326,10 @@ function convertXPlacement(degree){return sWidth/2 + rad * Math.cos(degree*0.017
 function convertYPlacement(degree){return sHeight/2 + rad * Math.sin(degree*0.0174532925)}
 
 // arrays med grader. Bruges ved .data i d3
-const xplacement = [convertXPlacement(300), convertXPlacement(320), convertXPlacement(350), convertXPlacement(25), convertXPlacement(72), convertXPlacement(130), convertXPlacement(190), convertXPlacement(260)]
-const yplacement = [convertYPlacement(300), convertYPlacement(320), convertYPlacement(350), convertYPlacement(25), convertYPlacement(72), convertYPlacement(130), convertYPlacement(190), convertYPlacement(260)] 
+const xplacement = [convertXPlacement(300), convertXPlacement(320), convertXPlacement(350),
+ convertXPlacement(25), convertXPlacement(72), convertXPlacement(130), convertXPlacement(190), convertXPlacement(260)]
+const yplacement = [convertYPlacement(300), convertYPlacement(320), convertYPlacement(350),
+ convertYPlacement(25), convertYPlacement(72), convertYPlacement(130), convertYPlacement(190), convertYPlacement(260)] 
 
 // arrays med data, nametags og fun facts 
 let co2arr = [1100000, 5240000, 15000000, 35500000, 60640000, 104000000, 126158000, 168700000]
@@ -358,7 +361,8 @@ let layer2 = svg.append('g')
 let layer3 = svg.append('g')
 
 // retter spiralens størrelse og position 
-let invis = layer1.append("svg").attr("opacity",100).attr("x", 138).attr("y", 94).attr("width", sWidth*0.61).attr("height", sHeight*0.71).attr("id", "boks");
+let invis = layer1.append("svg").attr("opacity",100).attr("x", 138).attr("y", 94)
+.attr("width", sWidth*0.61).attr("height", sHeight*0.71).attr("id", "boks");
 
 // appender spiral.svg (lavet i adobe illustrator)
 let spiral = d3.xml("spiral.svg")
@@ -494,10 +498,13 @@ let zoomedin = false
 hover er nem nok: hvis man holder over cirklen bliver rgb skruet ned med 10 på alle tre farver.
 Det er lavet som en function fordi hver fave er forkellig. Og justeres eftere "i"
 
-click: mere avancere forklaring er i selve koden men tdlr er: når man klikker kan der ske to ting;
-1. hvis man ikke er zoomet ind er "conrol" sat til 0(dette kunne også være true/false), hvis man zoomer bliver den sat til 10. 
-ved zoom bliver der lavet tre nye tekst elementer i midten og zoomscale bliver sat til 9, den cirkel der bliver klikket får en radius på 29(magisk tal) og bliver centreret.
-2. hvis man allerede er zoomed in er kontrol på 10 og "else if" functionen bliver aktiveret. den sætter alt tilbage som der var før og resetter control tallet
+click: når man klikker kan der ske to ting;
+1. hvis man ikke er zoomet ind er "zoomedin" sat til false, hvis man zoomer bliver den sat til true. 
+ved zoom bliver der lavet tre nye tekst elementer i midten og zoomscale bliver sat til 9,
+ den cirkel der bliver klikket får en radius på 29(magisk tal) og bliver centreret.
+
+2. hvis man allerede er zoomed in er kontrol på true og "else if" functionen bliver aktiveret.
+den sætter alt tilbage som der var før og resetter control tallet
 */
 
 // navne på cirklerne
@@ -552,7 +559,7 @@ let scrolled = false
         
 function scrolldown(){
     if(scrolled === false){
-        if (document.body.scrollTop > 190 || document.documentElement.scrollTop > 190){
+        if (document.body.scrollTop > 240 || document.documentElement.scrollTop > 240){
             scrolled = true;
 
             layer2.selectAll("circle")

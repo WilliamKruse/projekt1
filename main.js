@@ -3,10 +3,10 @@ const { Client } =  require("pg");
 const app = express()
 
 const api_port = process.env.PORT || 5000;
-const DB_USER = process.env.DB_USER || "yuryrofq";
-const DB_HOST = process.env.DB_HOST || "ella.db.elephantsql.com";
-const DB_NAME = process.env.DB_NAME || "yuryrofq";
-const DB_PW = process.env.DB_PW || "T4RiGNq-HM-JCLq8rKJLWLevOpUElOgw";
+const DB_USER = process.env.DB_USER;
+const DB_HOST = process.env.DB_HOST;
+const DB_NAME = process.env.DB_NAME;
+const DB_PW = process.env.DB_PW;
 const DB_PORT = process.env.DB_PORT || 5432;
 
 const client = new Client({ 
